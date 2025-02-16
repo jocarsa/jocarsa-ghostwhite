@@ -1,5 +1,16 @@
 <?php
 // log.php
+
+// Allow connections from any origin
+header("Access-Control-Allow-Origin: *");
+
+// Handle preflight OPTIONS request if necessary
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header("Access-Control-Allow-Methods: POST, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type");
+    exit(0);
+}
+
 header('Content-Type: application/json');
 
 try {
