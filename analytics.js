@@ -43,7 +43,7 @@
   };
 
   // Send the collected data to the logging endpoint (adjust the URL if needed)
-  fetch('log.php', {
+  fetch('https://ghostwhite.jocarsa.com/log.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
