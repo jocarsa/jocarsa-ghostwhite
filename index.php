@@ -296,9 +296,16 @@ if (isset($_SESSION['username'])) {
             <button type="submit">Apply</button>
           </form>
         </section>
-        <!-- Declare the defaultChartType variable for all sections -->
+        <!-- Global JavaScript variables and functions -->
         <script>
           var defaultChartType = <?php echo json_encode($defaultChartType); ?>;
+          // Global function available for all sections.
+          function updateChartPreference(type) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "update_chart_preference.php", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.send("chart_type=" + encodeURIComponent(type));
+          }
         </script>
         <!-- STATS CONTENT -->
         <section class="stats">
