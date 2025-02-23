@@ -296,6 +296,10 @@ if (isset($_SESSION['username'])) {
             <button type="submit">Apply</button>
           </form>
         </section>
+        <!-- Declare the defaultChartType variable for all sections -->
+        <script>
+          var defaultChartType = <?php echo json_encode($defaultChartType); ?>;
+        </script>
         <!-- STATS CONTENT -->
         <section class="stats">
           <?php if ($section === "overview"): ?>
@@ -336,7 +340,6 @@ if (isset($_SESSION['username'])) {
               <div id="chart-hour" class="chart-container"></div>
             </div>
             <script>
-              var defaultChartType = <?php echo json_encode($defaultChartType); ?>;
               var dataDay = <?php echo json_encode($dataDay); ?>;
               var dataWeek = <?php echo json_encode($dataWeek); ?>;
               var dataMonth = <?php echo json_encode($dataMonth); ?>;
@@ -347,12 +350,6 @@ if (isset($_SESSION['username'])) {
                 redrawChart("chart-month", dataMonth, defaultChartType);
                 redrawChart("chart-hour", dataHour, defaultChartType);
               });
-              function updateChartPreference(type) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "update_chart_preference.php", true);
-                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhr.send("chart_type=" + encodeURIComponent(type));
-              }
             </script>
           <?php elseif ($section === "resolutions"): ?>
             <div class="chart-section">
