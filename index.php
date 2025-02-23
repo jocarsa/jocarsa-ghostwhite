@@ -24,6 +24,19 @@ if ($row['count'] == 0) {
     $stmt->execute();
 }
 
+// Create a table to store the chart type preference if it doesn't exist.
+$db->exec("CREATE TABLE IF NOT EXISTS chart_preferences (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chart_type TEXT
+)");
+
+// Retrieve the default chart type, defaulting to 'bar'.
+$defaultChartType = 'bar';
+$stmtPref = $db->query("SELECT chart_type FROM chart_preferences ORDER BY id DESC LIMIT 1");
+if ($pref = $stmtPref->fetchArray(SQLITE3_ASSOC)) {
+    $defaultChartType = $pref['chart_type'];
+}
+
 // Process logout.
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     session_destroy();
@@ -70,6 +83,7 @@ if (isset($_SESSION['username'])) {
     $dataDay = [];
     $dataWeek = [];
     $dataMonth = [];
+    $dataHour = [];
     $dataResolutions = [];
     $dataOS = [];
     $dataBrowsers = [];
@@ -117,6 +131,18 @@ if (isset($_SESSION['username'])) {
         $resMonth = $stmtMonth->execute();
         while ($row = $resMonth->fetchArray(SQLITE3_ASSOC)) {
             $dataMonth[] = $row;
+        }
+        // Visits per hour (last 24 hours).
+        $q = "SELECT strftime('%H', timestamp) as label, count(*) as visits 
+              FROM logs 
+              WHERE timestamp >= datetime('now', '-24 hours')";
+        if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
+        $q .= " GROUP BY label ORDER BY label";
+        $stmtHour = $db->prepare($q);
+        if ($filterUser !== '') { $stmtHour->bindValue(':filter_user', $filterUser, SQLITE3_TEXT); }
+        $resHour = $stmtHour->execute();
+        while ($row = $resHour->fetchArray(SQLITE3_ASSOC)) {
+            $dataHour[] = $row;
         }
     } elseif ($section === "resolutions") {
         $q = "SELECT (screen_width || 'x' || screen_height) as label, count(*) as visits 
@@ -190,36 +216,36 @@ if (isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <title>jocarsa | ghostwhite</title>
   <link rel="stylesheet" href="admin.css">
-    <link rel="icon" type="image/svg+xml" href="ghostwhite.png" />
+  <link rel="icon" type="image/svg+xml" href="ghostwhite.png" />
 </head>
 <body>
 <?php if (!isset($_SESSION['username'])): ?>
   <!-- LOGIN FORM -->
   <div class="login-container">
-  		<img src="ghostwhite.png">
-      <h2>jocarsa | ghostwhite</h2>
-      <?php if ($message): ?>
-          <p class="error"><?php echo htmlspecialchars($message); ?></p>
-      <?php endif; ?>
-      <form method="post" action="index.php">
-          <div class="form-group">
-              <label for="username">Username:</label>
-              <input type="text" name="username" id="username" required autofocus>
-          </div>
-          <div class="form-group">
-              <label for="password">Password:</label>
-              <input type="password" name="password" id="password" required>
-          </div>
-          <div class="form-group">
-              <button type="submit" name="login">Login</button>
-          </div>
-      </form>
+    <img src="ghostwhite.png" alt="Logo">
+    <h2>jocarsa | ghostwhite</h2>
+    <?php if ($message): ?>
+      <p class="error"><?php echo htmlspecialchars($message); ?></p>
+    <?php endif; ?>
+    <form method="post" action="index.php">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+      </div>
+      <div class="form-group">
+        <button type="submit" name="login">Login</button>
+      </div>
+    </form>
   </div>
 <?php else: ?>
   <div id="wrapper">
     <!-- HEADER -->
     <header>
-    <img src="ghostwhite.png">
+      <img src="ghostwhite.png" alt="Logo">
       <h1>jocarsa | ghostwhite</h1>
     </header>
     <div id="main-container">
@@ -228,9 +254,7 @@ if (isset($_SESSION['username'])) {
         <h3>Users</h3>
         <ul>
           <li>
-            <a href="index.php?start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>">
-              All Users
-            </a>
+            <a href="index.php?start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>">All Users</a>
           </li>
           <?php foreach ($users as $usr): ?>
             <li>
@@ -278,108 +302,120 @@ if (isset($_SESSION['username'])) {
             <div class="chart-section">
               <h3>Visits Per Day</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-day', dataDay, 'bar')">Bar</button>
-                <button onclick="redrawChart('chart-day', dataDay, 'line')">Line</button>
-                <button onclick="redrawChart('chart-day', dataDay, 'pie')">Pie</button>
+                <button onclick="redrawChart('chart-day', dataDay, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-day', dataDay, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-day', dataDay, 'pie'); updateChartPreference('pie');">Pie</button>
               </div>
               <div id="chart-day" class="chart-container"></div>
             </div>
             <div class="chart-section">
               <h3>Visits Per Week</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-week', dataWeek, 'bar')">Bar</button>
-                <button onclick="redrawChart('chart-week', dataWeek, 'line')">Line</button>
-                <button onclick="redrawChart('chart-week', dataWeek, 'pie')">Pie</button>
+                <button onclick="redrawChart('chart-week', dataWeek, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-week', dataWeek, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-week', dataWeek, 'pie'); updateChartPreference('pie');">Pie</button>
               </div>
               <div id="chart-week" class="chart-container"></div>
             </div>
             <div class="chart-section">
               <h3>Visits Per Month</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-month', dataMonth, 'bar')">Bar</button>
-                <button onclick="redrawChart('chart-month', dataMonth, 'line')">Line</button>
-                <button onclick="redrawChart('chart-month', dataMonth, 'pie')">Pie</button>
+                <button onclick="redrawChart('chart-month', dataMonth, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-month', dataMonth, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-month', dataMonth, 'pie'); updateChartPreference('pie');">Pie</button>
               </div>
               <div id="chart-month" class="chart-container"></div>
             </div>
+            <div class="chart-section">
+              <h3>Visits Per Hour (Last 24 Hours)</h3>
+              <div class="chart-controls">
+                <button onclick="redrawChart('chart-hour', dataHour, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-hour', dataHour, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-hour', dataHour, 'pie'); updateChartPreference('pie');">Pie</button>
+              </div>
+              <div id="chart-hour" class="chart-container"></div>
+            </div>
             <script>
-              var section = "overview";
+              var defaultChartType = <?php echo json_encode($defaultChartType); ?>;
               var dataDay = <?php echo json_encode($dataDay); ?>;
               var dataWeek = <?php echo json_encode($dataWeek); ?>;
               var dataMonth = <?php echo json_encode($dataMonth); ?>;
-              // Initialize with bar charts.
+              var dataHour = <?php echo json_encode($dataHour); ?>;
               document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-day", dataDay, "bar");
-                redrawChart("chart-week", dataWeek, "bar");
-                redrawChart("chart-month", dataMonth, "bar");
+                redrawChart("chart-day", dataDay, defaultChartType);
+                redrawChart("chart-week", dataWeek, defaultChartType);
+                redrawChart("chart-month", dataMonth, defaultChartType);
+                redrawChart("chart-hour", dataHour, defaultChartType);
               });
+              function updateChartPreference(type) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "update_chart_preference.php", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.send("chart_type=" + encodeURIComponent(type));
+              }
             </script>
           <?php elseif ($section === "resolutions"): ?>
             <div class="chart-section">
               <h3>Screen Resolutions</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'bar')">Bar</button>
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line')">Line</button>
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie')">Pie</button>
+                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie'); updateChartPreference('pie');">Pie</button>
               </div>
               <div id="chart-resolutions" class="chart-container"></div>
             </div>
             <script>
-              var section = "resolutions";
               var dataResolutions = <?php echo json_encode($dataResolutions); ?>;
               document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-resolutions", dataResolutions, "bar");
+                redrawChart("chart-resolutions", dataResolutions, defaultChartType);
               });
             </script>
           <?php elseif ($section === "os"): ?>
             <div class="chart-section">
               <h3>Operating Systems</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-os', dataOS, 'bar')">Bar</button>
-                <button onclick="redrawChart('chart-os', dataOS, 'line')">Line</button>
-                <button onclick="redrawChart('chart-os', dataOS, 'pie')">Pie</button>
+                <button onclick="redrawChart('chart-os', dataOS, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-os', dataOS, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-os', dataOS, 'pie'); updateChartPreference('pie');">Pie</button>
               </div>
               <div id="chart-os" class="chart-container"></div>
             </div>
             <script>
-              var section = "os";
               var dataOS = <?php echo json_encode($dataOS); ?>;
               document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-os", dataOS, "bar");
+                redrawChart("chart-os", dataOS, defaultChartType);
               });
             </script>
           <?php elseif ($section === "browsers"): ?>
             <div class="chart-section">
               <h3>Browsers</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'bar')">Bar</button>
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line')">Line</button>
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie')">Pie</button>
+                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie'); updateChartPreference('pie');">Pie</button>
               </div>
               <div id="chart-browsers" class="chart-container"></div>
             </div>
             <script>
-              var section = "browsers";
               var dataBrowsers = <?php echo json_encode($dataBrowsers); ?>;
               document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-browsers", dataBrowsers, "bar");
+                redrawChart("chart-browsers", dataBrowsers, defaultChartType);
               });
             </script>
           <?php elseif ($section === "languages"): ?>
             <div class="chart-section">
               <h3>Languages</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'bar')">Bar</button>
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'line')">Line</button>
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'pie')">Pie</button>
+                <button onclick="redrawChart('chart-languages', dataLanguages, 'bar'); updateChartPreference('bar');">Bar</button>
+                <button onclick="redrawChart('chart-languages', dataLanguages, 'line'); updateChartPreference('line');">Line</button>
+                <button onclick="redrawChart('chart-languages', dataLanguages, 'pie'); updateChartPreference('pie');">Pie</button>
               </div>
               <div id="chart-languages" class="chart-container"></div>
             </div>
             <script>
-              var section = "languages";
               var dataLanguages = <?php echo json_encode($dataLanguages); ?>;
               document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-languages", dataLanguages, "bar");
+                redrawChart("chart-languages", dataLanguages, defaultChartType);
               });
             </script>
           <?php elseif ($section === "raw"): ?>
