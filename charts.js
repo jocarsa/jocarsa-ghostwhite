@@ -301,4 +301,92 @@ function redrawChart(containerId, data, chartType, chartTitle) {
     drawPieChart(containerId, data, chartTitle);
   }
 }
+// Draw a Horizontal Bar Chart with title, labels, values, and interactive hover.
+function drawHorizontalBarChart(containerId, data, chartTitle) {
+  var container = clearContainer(containerId);
+  var width = container.offsetWidth || 600;
+  var height = 300;
+  var padding = 40;
+  var svgNS = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("width", width);
+  svg.setAttribute("height", height);
+
+  // Add title if provided.
+  if (chartTitle) {
+    var titleText = document.createElementNS(svgNS, "text");
+    titleText.setAttribute("x", width / 2);
+    titleText.setAttribute("y", 20);
+    titleText.setAttribute("text-anchor", "middle");
+    titleText.setAttribute("font-size", "16px");
+    titleText.setAttribute("fill", "#333");
+    titleText.textContent = chartTitle;
+    svg.appendChild(titleText);
+  }
+  container.appendChild(svg);
+
+  var maxVal = Math.max(...data.map(d => d.visits)) || 1;
+  var barHeight = (height - 2 * padding) / data.length;
+  var tooltip = createTooltip();
+
+  data.forEach((d, i) => {
+    var barWidth = (d.visits / maxVal) * (width - 2 * padding);
+    var rect = document.createElementNS(svgNS, "rect");
+    rect.setAttribute("x", padding);
+    rect.setAttribute("y", padding + i * barHeight);
+    rect.setAttribute("width", barWidth);
+    rect.setAttribute("height", barHeight - 5);
+    rect.setAttribute("fill", "#333");
+    rect.style.transition = "fill 0.2s";
+
+    // Hover: change color and show tooltip.
+    rect.addEventListener("mouseover", function (e) {
+      rect.setAttribute("fill", "#555");
+      tooltip.style.display = "block";
+      tooltip.innerHTML = `<strong>${d.label}</strong>: ${d.visits}`;
+    });
+    rect.addEventListener("mousemove", function (e) {
+      tooltip.style.left = e.pageX + 10 + "px";
+      tooltip.style.top = e.pageY - 25 + "px";
+    });
+    rect.addEventListener("mouseout", function () {
+      rect.setAttribute("fill", "#333");
+      tooltip.style.display = "none";
+    });
+    svg.appendChild(rect);
+
+    // Label to the left of each bar.
+    var text = document.createElementNS(svgNS, "text");
+    text.setAttribute("x", padding - 5);
+    text.setAttribute("y", padding + i * barHeight + (barHeight - 5) / 2);
+    text.setAttribute("text-anchor", "end");
+    text.setAttribute("font-size", "10px");
+    text.textContent = d.label;
+    svg.appendChild(text);
+
+    // Value to the right of each bar.
+    var valueText = document.createElementNS(svgNS, "text");
+    valueText.setAttribute("x", padding + barWidth + 5);
+    valueText.setAttribute("y", padding + i * barHeight + (barHeight - 5) / 2);
+    valueText.setAttribute("text-anchor", "start");
+    valueText.setAttribute("font-size", "10px");
+    valueText.setAttribute("fill", "#333");
+    valueText.textContent = d.visits;
+    svg.appendChild(valueText);
+  });
+}
+
+// Update the redrawChart function to include the new chart type.
+function redrawChart(containerId, data, chartType, chartTitle) {
+  chartTitle = chartTitle || "";
+  if (chartType === "bar") {
+    drawBarChart(containerId, data, chartTitle);
+  } else if (chartType === "line") {
+    drawLineChart(containerId, data, chartTitle);
+  } else if (chartType === "pie") {
+    drawPieChart(containerId, data, chartTitle);
+  } else if (chartType === "horizontal") {
+    drawHorizontalBarChart(containerId, data, chartTitle);
+  }
+}
 

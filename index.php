@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         header("Location: index.php");
         exit;
     } else {
-        $message = "Invalid username or password.";
+        $message = "Nombre de usuario o contraseña incorrectos.";
     }
 }
 
@@ -90,11 +90,15 @@ if (isset($_SESSION['username'])) {
     $dataOS = [];
     $dataBrowsers = [];
     $dataLanguages = [];
+    $dataTimezones = [];
+    $dataColorDepth = [];
+    $dataUrls = [];
+    $dataIps = [];
 
     if ($section === "overview") {
         // Visits per day.
-        $q = "SELECT date(timestamp) as label, count(*) as visits 
-              FROM logs 
+        $q = "SELECT date(timestamp) as label, count(*) as visits
+              FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
@@ -107,8 +111,8 @@ if (isset($_SESSION['username'])) {
             $dataDay[] = $row;
         }
         // Visits per week.
-        $q = "SELECT strftime('%Y-%W', timestamp) as label, count(*) as visits 
-              FROM logs 
+        $q = "SELECT strftime('%Y-%W', timestamp) as label, count(*) as visits
+              FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
@@ -121,8 +125,8 @@ if (isset($_SESSION['username'])) {
             $dataWeek[] = $row;
         }
         // Visits per month.
-        $q = "SELECT strftime('%Y-%m', timestamp) as label, count(*) as visits 
-              FROM logs 
+        $q = "SELECT strftime('%Y-%m', timestamp) as label, count(*) as visits
+              FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
@@ -135,8 +139,8 @@ if (isset($_SESSION['username'])) {
             $dataMonth[] = $row;
         }
         // Visits per hour (last 24 hours).
-        $q = "SELECT strftime('%H', timestamp) as label, count(*) as visits 
-              FROM logs 
+        $q = "SELECT strftime('%H', timestamp) as label, count(*) as visits
+              FROM logs
               WHERE timestamp >= datetime('now', '-24 hours')";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
@@ -147,8 +151,8 @@ if (isset($_SESSION['username'])) {
             $dataHour[] = $row;
         }
     } elseif ($section === "resolutions") {
-        $q = "SELECT (screen_width || 'x' || screen_height) as label, count(*) as visits 
-              FROM logs 
+        $q = "SELECT (screen_width || 'x' || screen_height) as label, count(*) as visits
+              FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
@@ -161,8 +165,8 @@ if (isset($_SESSION['username'])) {
             $dataResolutions[] = $row;
         }
     } elseif ($section === "os") {
-        $q = "SELECT platform as label, count(*) as visits 
-              FROM logs 
+        $q = "SELECT platform as label, count(*) as visits
+              FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
@@ -175,15 +179,15 @@ if (isset($_SESSION['username'])) {
             $dataOS[] = $row;
         }
     } elseif ($section === "browsers") {
-        $q = "SELECT 
-                CASE 
+        $q = "SELECT
+                CASE
                   WHEN user_agent LIKE '%Chrome%' AND user_agent NOT LIKE '%Edge%' THEN 'Chrome'
                   WHEN user_agent LIKE '%Firefox%' THEN 'Firefox'
                   WHEN user_agent LIKE '%Safari%' AND user_agent NOT LIKE '%Chrome%' THEN 'Safari'
                   WHEN user_agent LIKE '%Edge%' THEN 'Edge'
                   ELSE 'Other'
-                END as label, count(*) as visits 
-              FROM logs 
+                END as label, count(*) as visits
+              FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
@@ -196,8 +200,8 @@ if (isset($_SESSION['username'])) {
             $dataBrowsers[] = $row;
         }
     } elseif ($section === "languages") {
-        $q = "SELECT language as label, count(*) as visits 
-              FROM logs 
+        $q = "SELECT language as label, count(*) as visits
+              FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate";
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
@@ -208,6 +212,62 @@ if (isset($_SESSION['username'])) {
         $resLang = $stmtLang->execute();
         while ($row = $resLang->fetchArray(SQLITE3_ASSOC)) {
             $dataLanguages[] = $row;
+        }
+    } elseif ($section === "timezones") {
+        $q = "SELECT timezone_offset as label, count(*) as visits
+              FROM logs
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+        if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
+        $q .= " GROUP BY label ORDER BY visits DESC";
+        $stmtTimezones = $db->prepare($q);
+        $stmtTimezones->bindValue(':startDate', $startDate, SQLITE3_TEXT);
+        $stmtTimezones->bindValue(':endDate', $endDate, SQLITE3_TEXT);
+        if ($filterUser !== '') { $stmtTimezones->bindValue(':filter_user', $filterUser, SQLITE3_TEXT); }
+        $resTimezones = $stmtTimezones->execute();
+        while ($row = $resTimezones->fetchArray(SQLITE3_ASSOC)) {
+            $dataTimezones[] = $row;
+        }
+    } elseif ($section === "color_depth") {
+        $q = "SELECT screen_color_depth as label, count(*) as visits
+              FROM logs
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+        if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
+        $q .= " GROUP BY label ORDER BY visits DESC";
+        $stmtColorDepth = $db->prepare($q);
+        $stmtColorDepth->bindValue(':startDate', $startDate, SQLITE3_TEXT);
+        $stmtColorDepth->bindValue(':endDate', $endDate, SQLITE3_TEXT);
+        if ($filterUser !== '') { $stmtColorDepth->bindValue(':filter_user', $filterUser, SQLITE3_TEXT); }
+        $resColorDepth = $stmtColorDepth->execute();
+        while ($row = $resColorDepth->fetchArray(SQLITE3_ASSOC)) {
+            $dataColorDepth[] = $row;
+        }
+    } elseif ($section === "urls") {
+        $q = "SELECT url as label, count(*) as visits
+              FROM logs
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+        if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
+        $q .= " GROUP BY label ORDER BY visits DESC";
+        $stmtUrls = $db->prepare($q);
+        $stmtUrls->bindValue(':startDate', $startDate, SQLITE3_TEXT);
+        $stmtUrls->bindValue(':endDate', $endDate, SQLITE3_TEXT);
+        if ($filterUser !== '') { $stmtUrls->bindValue(':filter_user', $filterUser, SQLITE3_TEXT); }
+        $resUrls = $stmtUrls->execute();
+        while ($row = $resUrls->fetchArray(SQLITE3_ASSOC)) {
+            $dataUrls[] = $row;
+        }
+    } elseif ($section === "ips") {
+        $q = "SELECT ip as label, count(*) as visits
+              FROM logs
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+        if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
+        $q .= " GROUP BY label ORDER BY visits DESC";
+        $stmtIps = $db->prepare($q);
+        $stmtIps->bindValue(':startDate', $startDate, SQLITE3_TEXT);
+        $stmtIps->bindValue(':endDate', $endDate, SQLITE3_TEXT);
+        if ($filterUser !== '') { $stmtIps->bindValue(':filter_user', $filterUser, SQLITE3_TEXT); }
+        $resIps = $stmtIps->execute();
+        while ($row = $resIps->fetchArray(SQLITE3_ASSOC)) {
+            $dataIps[] = $row;
         }
     }
 }
@@ -222,7 +282,7 @@ if (isset($_SESSION['username'])) {
 </head>
 <body>
 <?php if (!isset($_SESSION['username'])): ?>
-  <!-- LOGIN FORM -->
+  <!-- FORMULARIO DE INICIO DE SESIÓN -->
   <div class="login-container">
     <img src="ghostwhite.png" alt="Logo">
     <h2>jocarsa | ghostwhite</h2>
@@ -231,32 +291,32 @@ if (isset($_SESSION['username'])) {
     <?php endif; ?>
     <form method="post" action="index.php">
       <div class="form-group">
-        <label for="username">Username:</label>
+        <label for="username">Nombre de usuario:</label>
         <input type="text" name="username" id="username" required autofocus>
       </div>
       <div class="form-group">
-        <label for="password">Password:</label>
+        <label for="password">Contraseña:</label>
         <input type="password" name="password" id="password" required>
       </div>
       <div class="form-group">
-        <button type="submit" name="login">Login</button>
+        <button type="submit" name="login">Iniciar sesión</button>
       </div>
     </form>
   </div>
 <?php else: ?>
   <div id="wrapper">
-    <!-- HEADER -->
+    <!-- ENCABEZADO -->
     <header>
       <img src="ghostwhite.png" alt="Logo">
       <h1>jocarsa | ghostwhite</h1>
     </header>
     <div id="main-container">
-      <!-- SIDEBAR -->
+      <!-- BARRA LATERAL -->
       <nav id="sidebar">
-        <h3>Users</h3>
+        <h3>Usuarios</h3>
         <ul>
           <li>
-            <a href="index.php?start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>">All Users</a>
+            <a href="index.php?start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>">Todos los usuarios</a>
           </li>
           <?php foreach ($users as $usr): ?>
             <li>
@@ -267,23 +327,27 @@ if (isset($_SESSION['username'])) {
           <?php endforeach; ?>
         </ul>
         <div class="logout">
-          <a href="index.php?action=logout">Logout (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
+          <a href="index.php?action=logout">Cerrar sesión (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
         </div>
       </nav>
-      <!-- MAIN CONTENT -->
+      <!-- CONTENIDO PRINCIPAL -->
       <main id="content">
-        <!-- SUB-TABS -->
+        <!-- SUB-Pestañas -->
         <div id="sub-tabs">
-          <a href="index.php?section=overview&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="overview") echo 'class="active"'; ?>>Overview</a>
-          <a href="index.php?section=resolutions&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="resolutions") echo 'class="active"'; ?>>Resolutions</a>
-          <a href="index.php?section=os&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="os") echo 'class="active"'; ?>>Operating Systems</a>
-          <a href="index.php?section=browsers&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="browsers") echo 'class="active"'; ?>>Browsers</a>
-          <a href="index.php?section=languages&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="languages") echo 'class="active"'; ?>>Languages</a>
-          <a href="index.php?section=raw&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Raw Data</a>
+          <a href="index.php?section=overview&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="overview") echo 'class="active"'; ?>>Resumen</a>
+          <a href="index.php?section=resolutions&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="resolutions") echo 'class="active"'; ?>>Resoluciones</a>
+          <a href="index.php?section=os&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="os") echo 'class="active"'; ?>>Sistemas Operativos</a>
+          <a href="index.php?section=browsers&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="browsers") echo 'class="active"'; ?>>Navegadores</a>
+          <a href="index.php?section=languages&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="languages") echo 'class="active"'; ?>>Idiomas</a>
+          <a href="index.php?section=timezones&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="timezones") echo 'class="active"'; ?>>Zonas Horarias</a>
+          <a href="index.php?section=color_depth&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="color_depth") echo 'class="active"'; ?>>Profundidad de Color</a>
+          <a href="index.php?section=urls&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="urls") echo 'class="active"'; ?>>URLs Visitadas</a>
+          <a href="index.php?section=ips&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="ips") echo 'class="active"'; ?>>IPs</a>
+          <a href="index.php?section=raw&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Datos Sin Procesar</a>
         </div>
-        <!-- DATE FILTER -->
+        <!-- FILTRO DE FECHA -->
         <section class="filters">
-          <h3>Date Filter</h3>
+          <h3>Filtro de Fecha</h3>
           <form method="get" action="index.php">
             <?php if ($filterUser !== ''): ?>
               <input type="hidden" name="filter_user" value="<?php echo htmlspecialchars($filterUser); ?>">
@@ -291,17 +355,17 @@ if (isset($_SESSION['username'])) {
             <?php if ($section !== ''): ?>
               <input type="hidden" name="section" value="<?php echo htmlspecialchars($section); ?>">
             <?php endif; ?>
-            <label for="start_date">Start Date:</label>
+            <label for="start_date">Fecha de Inicio:</label>
             <input type="date" name="start_date" id="start_date" value="<?php echo htmlspecialchars($startDate); ?>">
-            <label for="end_date">End Date:</label>
+            <label for="end_date">Fecha de Fin:</label>
             <input type="date" name="end_date" id="end_date" value="<?php echo htmlspecialchars($endDate); ?>">
-            <button type="submit">Apply</button>
+            <button type="submit">Aplicar</button>
           </form>
         </section>
-        <!-- Global JavaScript variables and functions -->
+        <!-- Variables y funciones JavaScript globales -->
         <script>
-          // chartPreferences holds any saved preference per chart.
-          // If a chart's preference is not set, fallback to 'bar'.
+          // chartPreferences contiene cualquier preferencia guardada por gráfico.
+          // Si la preferencia de un gráfico no está establecida, se usa 'bar' por defecto.
           var chartPreferences = <?php echo json_encode($chartPrefs); ?>;
           function updateChartPreference(chartId, type) {
             var xhr = new XMLHttpRequest();
@@ -310,42 +374,46 @@ if (isset($_SESSION['username'])) {
             xhr.send("chart_id=" + encodeURIComponent(chartId) + "&chart_type=" + encodeURIComponent(type));
           }
         </script>
-        <!-- STATS CONTENT -->
+        <!-- CONTENIDO DE ESTADÍSTICAS -->
         <section class="stats">
           <?php if ($section === "overview"): ?>
             <div class="chart-section">
-              <h3>Visits Per Day</h3>
+              <h3>Visitas Por Día</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-day', dataDay, 'bar'); updateChartPreference('day', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-day', dataDay, 'line'); updateChartPreference('day', 'line');">Line</button>
-                <button onclick="redrawChart('chart-day', dataDay, 'pie'); updateChartPreference('day', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-day', dataDay, 'bar'); updateChartPreference('day', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-day', dataDay, 'line'); updateChartPreference('day', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-day', dataDay, 'pie'); updateChartPreference('day', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-day', dataDay, 'horizontal'); updateChartPreference('day', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-day" class="chart-container"></div>
             </div>
             <div class="chart-section">
-              <h3>Visits Per Week</h3>
+              <h3>Visitas Por Semana</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-week', dataWeek, 'bar'); updateChartPreference('week', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-week', dataWeek, 'line'); updateChartPreference('week', 'line');">Line</button>
-                <button onclick="redrawChart('chart-week', dataWeek, 'pie'); updateChartPreference('week', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-week', dataWeek, 'bar'); updateChartPreference('week', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-week', dataWeek, 'line'); updateChartPreference('week', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-week', dataWeek, 'pie'); updateChartPreference('week', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-week', dataWeek, 'horizontal'); updateChartPreference('week', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-week" class="chart-container"></div>
             </div>
             <div class="chart-section">
-              <h3>Visits Per Month</h3>
+              <h3>Visitas Por Mes</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-month', dataMonth, 'bar'); updateChartPreference('month', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-month', dataMonth, 'line'); updateChartPreference('month', 'line');">Line</button>
-                <button onclick="redrawChart('chart-month', dataMonth, 'pie'); updateChartPreference('month', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-month', dataMonth, 'bar'); updateChartPreference('month', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-month', dataMonth, 'line'); updateChartPreference('month', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-month', dataMonth, 'pie'); updateChartPreference('month', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-month', dataMonth, 'horizontal'); updateChartPreference('month', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-month" class="chart-container"></div>
             </div>
             <div class="chart-section">
-              <h3>Visits Per Hour (Last 24 Hours)</h3>
+              <h3>Visitas Por Hora (Últimas 24 Horas)</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-hour', dataHour, 'bar'); updateChartPreference('hour', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-hour', dataHour, 'line'); updateChartPreference('hour', 'line');">Line</button>
-                <button onclick="redrawChart('chart-hour', dataHour, 'pie'); updateChartPreference('hour', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-hour', dataHour, 'bar'); updateChartPreference('hour', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-hour', dataHour, 'line'); updateChartPreference('hour', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-hour', dataHour, 'pie'); updateChartPreference('hour', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-hour', dataHour, 'horizontal'); updateChartPreference('hour', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-hour" class="chart-container"></div>
             </div>
@@ -363,11 +431,12 @@ if (isset($_SESSION['username'])) {
             </script>
           <?php elseif ($section === "resolutions"): ?>
             <div class="chart-section">
-              <h3>Screen Resolutions</h3>
+              <h3>Resoluciones de Pantalla</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'bar'); updateChartPreference('resolutions', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line'); updateChartPreference('resolutions', 'line');">Line</button>
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie'); updateChartPreference('resolutions', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'bar'); updateChartPreference('resolutions', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line'); updateChartPreference('resolutions', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie'); updateChartPreference('resolutions', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'horizontal'); updateChartPreference('resolutions', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-resolutions" class="chart-container"></div>
             </div>
@@ -379,11 +448,12 @@ if (isset($_SESSION['username'])) {
             </script>
           <?php elseif ($section === "os"): ?>
             <div class="chart-section">
-              <h3>Operating Systems</h3>
+              <h3>Sistemas Operativos</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-os', dataOS, 'bar'); updateChartPreference('os', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-os', dataOS, 'line'); updateChartPreference('os', 'line');">Line</button>
-                <button onclick="redrawChart('chart-os', dataOS, 'pie'); updateChartPreference('os', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-os', dataOS, 'bar'); updateChartPreference('os', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-os', dataOS, 'line'); updateChartPreference('os', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-os', dataOS, 'pie'); updateChartPreference('os', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-os', dataOS, 'horizontal'); updateChartPreference('os', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-os" class="chart-container"></div>
             </div>
@@ -395,11 +465,12 @@ if (isset($_SESSION['username'])) {
             </script>
           <?php elseif ($section === "browsers"): ?>
             <div class="chart-section">
-              <h3>Browsers</h3>
+              <h3>Navegadores</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'bar'); updateChartPreference('browsers', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line'); updateChartPreference('browsers', 'line');">Line</button>
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie'); updateChartPreference('browsers', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'bar'); updateChartPreference('browsers', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line'); updateChartPreference('browsers', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie'); updateChartPreference('browsers', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'horizontal'); updateChartPreference('browsers', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-browsers" class="chart-container"></div>
             </div>
@@ -411,11 +482,12 @@ if (isset($_SESSION['username'])) {
             </script>
           <?php elseif ($section === "languages"): ?>
             <div class="chart-section">
-              <h3>Languages</h3>
+              <h3>Idiomas</h3>
               <div class="chart-controls">
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'bar'); updateChartPreference('languages', 'bar');">Bar</button>
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'line'); updateChartPreference('languages', 'line');">Line</button>
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'pie'); updateChartPreference('languages', 'pie');">Pie</button>
+                <button onclick="redrawChart('chart-languages', dataLanguages, 'bar'); updateChartPreference('languages', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-languages', dataLanguages, 'line'); updateChartPreference('languages', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-languages', dataLanguages, 'pie'); updateChartPreference('languages', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-languages', dataLanguages, 'horizontal'); updateChartPreference('languages', 'horizontal');">Horizontal</button>
               </div>
               <div id="chart-languages" class="chart-container"></div>
             </div>
@@ -425,8 +497,76 @@ if (isset($_SESSION['username'])) {
                 redrawChart("chart-languages", dataLanguages, chartPreferences['languages'] || 'bar');
               });
             </script>
+          <?php elseif ($section === "timezones"): ?>
+            <div class="chart-section">
+              <h3>Zonas Horarias</h3>
+              <div class="chart-controls">
+                <button onclick="redrawChart('chart-timezones', dataTimezones, 'bar'); updateChartPreference('timezones', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-timezones', dataTimezones, 'line'); updateChartPreference('timezones', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-timezones', dataTimezones, 'pie'); updateChartPreference('timezones', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-timezones', dataTimezones, 'horizontal'); updateChartPreference('timezones', 'horizontal');">Horizontal</button>
+              </div>
+              <div id="chart-timezones" class="chart-container"></div>
+            </div>
+            <script>
+              var dataTimezones = <?php echo json_encode($dataTimezones); ?>;
+              document.addEventListener("DOMContentLoaded", function(){
+                redrawChart("chart-timezones", dataTimezones, chartPreferences['timezones'] || 'bar');
+              });
+            </script>
+          <?php elseif ($section === "color_depth"): ?>
+            <div class="chart-section">
+              <h3>Profundidad de Color</h3>
+              <div class="chart-controls">
+                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'bar'); updateChartPreference('color_depth', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'line'); updateChartPreference('color_depth', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'pie'); updateChartPreference('color_depth', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'horizontal'); updateChartPreference('color_depth', 'horizontal');">Horizontal</button>
+              </div>
+              <div id="chart-color-depth" class="chart-container"></div>
+            </div>
+            <script>
+              var dataColorDepth = <?php echo json_encode($dataColorDepth); ?>;
+              document.addEventListener("DOMContentLoaded", function(){
+                redrawChart("chart-color-depth", dataColorDepth, chartPreferences['color_depth'] || 'bar');
+              });
+            </script>
+          <?php elseif ($section === "urls"): ?>
+            <div class="chart-section">
+              <h3>URLs Visitadas</h3>
+              <div class="chart-controls">
+                <button onclick="redrawChart('chart-urls', dataUrls, 'bar'); updateChartPreference('urls', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-urls', dataUrls, 'line'); updateChartPreference('urls', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-urls', dataUrls, 'pie'); updateChartPreference('urls', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-urls', dataUrls, 'horizontal'); updateChartPreference('urls', 'horizontal');">Horizontal</button>
+              </div>
+              <div id="chart-urls" class="chart-container"></div>
+            </div>
+            <script>
+              var dataUrls = <?php echo json_encode($dataUrls); ?>;
+              document.addEventListener("DOMContentLoaded", function(){
+                redrawChart("chart-urls", dataUrls, chartPreferences['urls'] || 'bar');
+              });
+            </script>
+          <?php elseif ($section === "ips"): ?>
+            <div class="chart-section">
+              <h3>IPs</h3>
+              <div class="chart-controls">
+                <button onclick="redrawChart('chart-ips', dataIps, 'bar'); updateChartPreference('ips', 'bar');">Barra</button>
+                <button onclick="redrawChart('chart-ips', dataIps, 'line'); updateChartPreference('ips', 'line');">Línea</button>
+                <button onclick="redrawChart('chart-ips', dataIps, 'pie'); updateChartPreference('ips', 'pie');">Pastel</button>
+                <button onclick="redrawChart('chart-ips', dataIps, 'horizontal'); updateChartPreference('ips', 'horizontal');">Horizontal</button>
+              </div>
+              <div id="chart-ips" class="chart-container"></div>
+            </div>
+            <script>
+              var dataIps = <?php echo json_encode($dataIps); ?>;
+              document.addEventListener("DOMContentLoaded", function(){
+                redrawChart("chart-ips", dataIps, chartPreferences['ips'] || 'bar');
+              });
+            </script>
           <?php elseif ($section === "raw"): ?>
-            <h3>Raw Analytics Data</h3>
+            <h3>Datos Sin Procesar de Analítica</h3>
             <?php
               $q = "SELECT * FROM logs WHERE date(timestamp) BETWEEN :startDate AND :endDate";
               if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
@@ -440,19 +580,19 @@ if (isset($_SESSION['username'])) {
             <table>
               <tr>
                 <th>ID</th>
-                <th>User</th>
-                <th>User Agent</th>
-                <th>Screen (WxH)</th>
-                <th>Viewport (WxH)</th>
-                <th>Language</th>
-                <th>Languages</th>
-                <th>Timezone Offset</th>
-                <th>Platform</th>
-                <th>Connection</th>
-                <th>Color Depth</th>
+                <th>Usuario</th>
+                <th>Agente de Usuario</th>
+                <th>Pantalla (WxH)</th>
+                <th>Ventana Gráfica (WxH)</th>
+                <th>Idioma</th>
+                <th>Idiomas</th>
+                <th>Desfase de Zona Horaria</th>
+                <th>Plataforma</th>
+                <th>Conexión</th>
+                <th>Profundidad de Color</th>
                 <th>URL</th>
-                <th>Referrer</th>
-                <th>Timestamp</th>
+                <th>Referente</th>
+                <th>Marca de Tiempo</th>
                 <th>IP</th>
               </tr>
               <?php while ($row = $resRaw->fetchArray(SQLITE3_ASSOC)): ?>
@@ -480,7 +620,7 @@ if (isset($_SESSION['username'])) {
       </main>
     </div>
   </div>
-  <!-- Include the charts library -->
+  <!-- Incluir la librería de gráficos -->
   <script src="charts.js"></script>
 <?php endif; ?>
 </body>
