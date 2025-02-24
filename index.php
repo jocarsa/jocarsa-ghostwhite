@@ -376,196 +376,197 @@ if (isset($_SESSION['username'])) {
         </script>
         <!-- CONTENIDO DE ESTADÍSTICAS -->
         <section class="stats">
-          <?php if ($section === "overview"): ?>
+    <div class="chart-grid">
+        <?php if ($section === "overview"): ?>
             <div class="chart-section">
-              <h3>Visitas Por Día</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-day', dataDay, 'bar'); updateChartPreference('day', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-day', dataDay, 'line'); updateChartPreference('day', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-day', dataDay, 'pie'); updateChartPreference('day', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-day', dataDay, 'horizontal'); updateChartPreference('day', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-day" class="chart-container"></div>
+                <h3>Visitas Por Día</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-day', dataDay, 'bar'); updateChartPreference('day', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-day', dataDay, 'line'); updateChartPreference('day', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-day', dataDay, 'pie'); updateChartPreference('day', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-day', dataDay, 'horizontal'); updateChartPreference('day', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-day" class="chart-container"></div>
             </div>
             <div class="chart-section">
-              <h3>Visitas Por Semana</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-week', dataWeek, 'bar'); updateChartPreference('week', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-week', dataWeek, 'line'); updateChartPreference('week', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-week', dataWeek, 'pie'); updateChartPreference('week', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-week', dataWeek, 'horizontal'); updateChartPreference('week', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-week" class="chart-container"></div>
+                <h3>Visitas Por Semana</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-week', dataWeek, 'bar'); updateChartPreference('week', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-week', dataWeek, 'line'); updateChartPreference('week', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-week', dataWeek, 'pie'); updateChartPreference('week', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-week', dataWeek, 'horizontal'); updateChartPreference('week', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-week" class="chart-container"></div>
             </div>
             <div class="chart-section">
-              <h3>Visitas Por Mes</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-month', dataMonth, 'bar'); updateChartPreference('month', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-month', dataMonth, 'line'); updateChartPreference('month', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-month', dataMonth, 'pie'); updateChartPreference('month', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-month', dataMonth, 'horizontal'); updateChartPreference('month', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-month" class="chart-container"></div>
+                <h3>Visitas Por Mes</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-month', dataMonth, 'bar'); updateChartPreference('month', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-month', dataMonth, 'line'); updateChartPreference('month', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-month', dataMonth, 'pie'); updateChartPreference('month', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-month', dataMonth, 'horizontal'); updateChartPreference('month', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-month" class="chart-container"></div>
             </div>
             <div class="chart-section">
-              <h3>Visitas Por Hora (Últimas 24 Horas)</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-hour', dataHour, 'bar'); updateChartPreference('hour', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-hour', dataHour, 'line'); updateChartPreference('hour', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-hour', dataHour, 'pie'); updateChartPreference('hour', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-hour', dataHour, 'horizontal'); updateChartPreference('hour', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-hour" class="chart-container"></div>
-            </div>
-            <script>
-              var dataDay = <?php echo json_encode($dataDay); ?>;
-              var dataWeek = <?php echo json_encode($dataWeek); ?>;
-              var dataMonth = <?php echo json_encode($dataMonth); ?>;
-              var dataHour = <?php echo json_encode($dataHour); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-day", dataDay, chartPreferences['day'] || 'bar');
-                redrawChart("chart-week", dataWeek, chartPreferences['week'] || 'bar');
-                redrawChart("chart-month", dataMonth, chartPreferences['month'] || 'bar');
-                redrawChart("chart-hour", dataHour, chartPreferences['hour'] || 'bar');
-              });
-            </script>
-          <?php elseif ($section === "resolutions"): ?>
-            <div class="chart-section">
-              <h3>Resoluciones de Pantalla</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'bar'); updateChartPreference('resolutions', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line'); updateChartPreference('resolutions', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie'); updateChartPreference('resolutions', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-resolutions', dataResolutions, 'horizontal'); updateChartPreference('resolutions', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-resolutions" class="chart-container"></div>
+                <h3>Visitas Por Hora (Últimas 24 Horas)</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-hour', dataHour, 'bar'); updateChartPreference('hour', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-hour', dataHour, 'line'); updateChartPreference('hour', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-hour', dataHour, 'pie'); updateChartPreference('hour', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-hour', dataHour, 'horizontal'); updateChartPreference('hour', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-hour" class="chart-container"></div>
             </div>
             <script>
-              var dataResolutions = <?php echo json_encode($dataResolutions); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-resolutions", dataResolutions, chartPreferences['resolutions'] || 'bar');
-              });
+                var dataDay = <?php echo json_encode($dataDay); ?>;
+                var dataWeek = <?php echo json_encode($dataWeek); ?>;
+                var dataMonth = <?php echo json_encode($dataMonth); ?>;
+                var dataHour = <?php echo json_encode($dataHour); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-day", dataDay, chartPreferences['day'] || 'bar');
+                    redrawChart("chart-week", dataWeek, chartPreferences['week'] || 'bar');
+                    redrawChart("chart-month", dataMonth, chartPreferences['month'] || 'bar');
+                    redrawChart("chart-hour", dataHour, chartPreferences['hour'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "os"): ?>
+        <?php elseif ($section === "resolutions"): ?>
             <div class="chart-section">
-              <h3>Sistemas Operativos</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-os', dataOS, 'bar'); updateChartPreference('os', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-os', dataOS, 'line'); updateChartPreference('os', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-os', dataOS, 'pie'); updateChartPreference('os', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-os', dataOS, 'horizontal'); updateChartPreference('os', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-os" class="chart-container"></div>
+                <h3>Resoluciones de Pantalla</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-resolutions', dataResolutions, 'bar'); updateChartPreference('resolutions', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line'); updateChartPreference('resolutions', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie'); updateChartPreference('resolutions', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-resolutions', dataResolutions, 'horizontal'); updateChartPreference('resolutions', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-resolutions" class="chart-container"></div>
             </div>
             <script>
-              var dataOS = <?php echo json_encode($dataOS); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-os", dataOS, chartPreferences['os'] || 'bar');
-              });
+                var dataResolutions = <?php echo json_encode($dataResolutions); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-resolutions", dataResolutions, chartPreferences['resolutions'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "browsers"): ?>
+        <?php elseif ($section === "os"): ?>
             <div class="chart-section">
-              <h3>Navegadores</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'bar'); updateChartPreference('browsers', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line'); updateChartPreference('browsers', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie'); updateChartPreference('browsers', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-browsers', dataBrowsers, 'horizontal'); updateChartPreference('browsers', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-browsers" class="chart-container"></div>
+                <h3>Sistemas Operativos</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-os', dataOS, 'bar'); updateChartPreference('os', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-os', dataOS, 'line'); updateChartPreference('os', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-os', dataOS, 'pie'); updateChartPreference('os', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-os', dataOS, 'horizontal'); updateChartPreference('os', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-os" class="chart-container"></div>
             </div>
             <script>
-              var dataBrowsers = <?php echo json_encode($dataBrowsers); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-browsers", dataBrowsers, chartPreferences['browsers'] || 'bar');
-              });
+                var dataOS = <?php echo json_encode($dataOS); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-os", dataOS, chartPreferences['os'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "languages"): ?>
+        <?php elseif ($section === "browsers"): ?>
             <div class="chart-section">
-              <h3>Idiomas</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'bar'); updateChartPreference('languages', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'line'); updateChartPreference('languages', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'pie'); updateChartPreference('languages', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-languages', dataLanguages, 'horizontal'); updateChartPreference('languages', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-languages" class="chart-container"></div>
+                <h3>Navegadores</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-browsers', dataBrowsers, 'bar'); updateChartPreference('browsers', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line'); updateChartPreference('browsers', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie'); updateChartPreference('browsers', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-browsers', dataBrowsers, 'horizontal'); updateChartPreference('browsers', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-browsers" class="chart-container"></div>
             </div>
             <script>
-              var dataLanguages = <?php echo json_encode($dataLanguages); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-languages", dataLanguages, chartPreferences['languages'] || 'bar');
-              });
+                var dataBrowsers = <?php echo json_encode($dataBrowsers); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-browsers", dataBrowsers, chartPreferences['browsers'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "timezones"): ?>
+        <?php elseif ($section === "languages"): ?>
             <div class="chart-section">
-              <h3>Zonas Horarias</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-timezones', dataTimezones, 'bar'); updateChartPreference('timezones', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-timezones', dataTimezones, 'line'); updateChartPreference('timezones', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-timezones', dataTimezones, 'pie'); updateChartPreference('timezones', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-timezones', dataTimezones, 'horizontal'); updateChartPreference('timezones', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-timezones" class="chart-container"></div>
+                <h3>Idiomas</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-languages', dataLanguages, 'bar'); updateChartPreference('languages', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-languages', dataLanguages, 'line'); updateChartPreference('languages', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-languages', dataLanguages, 'pie'); updateChartPreference('languages', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-languages', dataLanguages, 'horizontal'); updateChartPreference('languages', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-languages" class="chart-container"></div>
             </div>
             <script>
-              var dataTimezones = <?php echo json_encode($dataTimezones); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-timezones", dataTimezones, chartPreferences['timezones'] || 'bar');
-              });
+                var dataLanguages = <?php echo json_encode($dataLanguages); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-languages", dataLanguages, chartPreferences['languages'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "color_depth"): ?>
+        <?php elseif ($section === "timezones"): ?>
             <div class="chart-section">
-              <h3>Profundidad de Color</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'bar'); updateChartPreference('color_depth', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'line'); updateChartPreference('color_depth', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'pie'); updateChartPreference('color_depth', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'horizontal'); updateChartPreference('color_depth', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-color-depth" class="chart-container"></div>
+                <h3>Zonas Horarias</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-timezones', dataTimezones, 'bar'); updateChartPreference('timezones', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-timezones', dataTimezones, 'line'); updateChartPreference('timezones', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-timezones', dataTimezones, 'pie'); updateChartPreference('timezones', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-timezones', dataTimezones, 'horizontal'); updateChartPreference('timezones', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-timezones" class="chart-container"></div>
             </div>
             <script>
-              var dataColorDepth = <?php echo json_encode($dataColorDepth); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-color-depth", dataColorDepth, chartPreferences['color_depth'] || 'bar');
-              });
+                var dataTimezones = <?php echo json_encode($dataTimezones); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-timezones", dataTimezones, chartPreferences['timezones'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "urls"): ?>
+        <?php elseif ($section === "color_depth"): ?>
             <div class="chart-section">
-              <h3>URLs Visitadas</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-urls', dataUrls, 'bar'); updateChartPreference('urls', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-urls', dataUrls, 'line'); updateChartPreference('urls', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-urls', dataUrls, 'pie'); updateChartPreference('urls', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-urls', dataUrls, 'horizontal'); updateChartPreference('urls', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-urls" class="chart-container"></div>
+                <h3>Profundidad de Color</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'bar'); updateChartPreference('color_depth', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'line'); updateChartPreference('color_depth', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'pie'); updateChartPreference('color_depth', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'horizontal'); updateChartPreference('color_depth', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-color-depth" class="chart-container"></div>
             </div>
             <script>
-              var dataUrls = <?php echo json_encode($dataUrls); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-urls", dataUrls, chartPreferences['urls'] || 'bar');
-              });
+                var dataColorDepth = <?php echo json_encode($dataColorDepth); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-color-depth", dataColorDepth, chartPreferences['color_depth'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "ips"): ?>
+        <?php elseif ($section === "urls"): ?>
             <div class="chart-section">
-              <h3>IPs</h3>
-              <div class="chart-controls">
-                <button onclick="redrawChart('chart-ips', dataIps, 'bar'); updateChartPreference('ips', 'bar');">Barra</button>
-                <button onclick="redrawChart('chart-ips', dataIps, 'line'); updateChartPreference('ips', 'line');">Línea</button>
-                <button onclick="redrawChart('chart-ips', dataIps, 'pie'); updateChartPreference('ips', 'pie');">Pastel</button>
-                <button onclick="redrawChart('chart-ips', dataIps, 'horizontal'); updateChartPreference('ips', 'horizontal');">Horizontal</button>
-              </div>
-              <div id="chart-ips" class="chart-container"></div>
+                <h3>URLs Visitadas</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-urls', dataUrls, 'bar'); updateChartPreference('urls', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-urls', dataUrls, 'line'); updateChartPreference('urls', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-urls', dataUrls, 'pie'); updateChartPreference('urls', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-urls', dataUrls, 'horizontal'); updateChartPreference('urls', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-urls" class="chart-container"></div>
             </div>
             <script>
-              var dataIps = <?php echo json_encode($dataIps); ?>;
-              document.addEventListener("DOMContentLoaded", function(){
-                redrawChart("chart-ips", dataIps, chartPreferences['ips'] || 'bar');
-              });
+                var dataUrls = <?php echo json_encode($dataUrls); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-urls", dataUrls, chartPreferences['urls'] || 'bar');
+                });
             </script>
-          <?php elseif ($section === "raw"): ?>
+        <?php elseif ($section === "ips"): ?>
+            <div class="chart-section">
+                <h3>IPs</h3>
+                <div class="chart-controls">
+                    <button onclick="redrawChart('chart-ips', dataIps, 'bar'); updateChartPreference('ips', 'bar');">Barra</button>
+                    <button onclick="redrawChart('chart-ips', dataIps, 'line'); updateChartPreference('ips', 'line');">Línea</button>
+                    <button onclick="redrawChart('chart-ips', dataIps, 'pie'); updateChartPreference('ips', 'pie');">Pastel</button>
+                    <button onclick="redrawChart('chart-ips', dataIps, 'horizontal'); updateChartPreference('ips', 'horizontal');">Horizontal</button>
+                </div>
+                <div id="chart-ips" class="chart-container"></div>
+            </div>
+            <script>
+                var dataIps = <?php echo json_encode($dataIps); ?>;
+                document.addEventListener("DOMContentLoaded", function(){
+                    redrawChart("chart-ips", dataIps, chartPreferences['ips'] || 'bar');
+                });
+            </script>
+        <?php elseif ($section === "raw"): ?>
             <h3>Datos Sin Procesar de Analítica</h3>
             <?php
               $q = "SELECT * FROM logs WHERE date(timestamp) BETWEEN :startDate AND :endDate";
@@ -615,8 +616,10 @@ if (isset($_SESSION['username'])) {
                 </tr>
               <?php endwhile; ?>
             </table>
-          <?php endif; ?>
-        </section>
+        <?php endif; ?>
+    </div>
+</section>
+
       </main>
     </div>
   </div>

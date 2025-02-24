@@ -223,4 +223,14 @@ header img{
     color: red;
     text-align: center;
 }
+/* Two-Column Grid Layout for Chart Sections */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.chart-grid > .chart-section {
+    box-sizing: border-box;
+}
 
