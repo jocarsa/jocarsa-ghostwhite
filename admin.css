@@ -4,7 +4,7 @@
 /* General Styles */
 body {
     margin: 0;
-    font-family: Ubuntu,Arial, sans-serif;
+    font-family: Ubuntu, Arial, sans-serif;
     background-color: ghostwhite;
     color: #333;
 }
@@ -16,14 +16,14 @@ header {
     padding: 20px;
     text-align: center;
     display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content: flex-start;
-	align-items: center;
-	align-content: stretch;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: stretch;
 }
-header img{
-	width:60px;
+header img {
+    width: 60px;
 }
 
 /* Main Container */
@@ -184,8 +184,8 @@ header img{
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
-.login-container img{
-	width:100%;
+.login-container img {
+    width: 100%;
 }
 .login-container h2 {
     text-align: center;
@@ -223,14 +223,117 @@ header img{
     color: red;
     text-align: center;
 }
+
 /* Two-Column Grid Layout for Chart Sections */
 .chart-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
-
 .chart-grid > .chart-section {
     box-sizing: border-box;
+}
+/* If only one chart is present, span full width (and full height of container if desired) */
+.chart-grid > .chart-section:only-child {
+    grid-column: 1 / -1;
+}
+.chart-grid > .chart-section:only-child .chart-container {
+    height: 100%;
+}
+
+/* Calendar Table Styles */
+.calendar-container {
+    margin: 20px 0;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    vertical-align: top;
+}
+
+.calendar-table th {
+    background-color: #444;
+    color: ghostwhite;
+    font-weight: bold;
+}
+
+.calendar-table td {
+    background-color: ghostwhite;
+    min-width: 50px;
+    height: 50px;
+    position: relative;
+}
+
+/* Style for the day number within each cell */
+.calendar-table td .day-number {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Highlight cells that have visit data */
+.calendar-table td.visited {
+    background-color: #e0f7fa; /* light blue background */
+}
+
+/* Hover effect for calendar cells */
+.calendar-table td:hover {
+    background-color: #f4f4f4;
+}
+
+/* Optional: Style for visit count text */
+.calendar-table td .visit-count {
+    font-size: 0.9em;
+    color: #333;
+}
+
+/* Heatmap Calendar Styles */
+.heatmap-year {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.heatmap-container {
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.heatmap-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.heatmap-table th,
+.heatmap-table td {
+    border: 1px solid #ccc;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 2px;
+    font-size: 10px;
+}
+
+.heatmap-table th {
+    background-color: #444;
+    color: ghostwhite;
+}
+
+.heatmap-table td {
+    cursor: pointer;
+}
+
+.heatmap-table td:hover {
+    opacity: 0.8;
 }
 

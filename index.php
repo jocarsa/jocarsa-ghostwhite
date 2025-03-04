@@ -362,6 +362,9 @@ if (isset($_SESSION['username'])) {
           <a href="index.php?section=urls&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="urls") echo 'class="active"'; ?>>URLs Visitadas</a>
           <a href="index.php?section=ips&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="ips") echo 'class="active"'; ?>>IPs</a>
           <a href="index.php?section=raw&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Datos Sin Procesar</a>
+        	<a href="index.php?section=calendar&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="calendar") echo 'class="active"'; ?>>Calendario</a>
+			<a href="index.php?section=heatmap&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="heatmap") echo 'class="active"'; ?>>Heatmap</a>
+
         </div>
         <!-- DATE FILTER -->
         <section class="filters">
@@ -403,6 +406,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-day', dataDay, 'line'); updateChartPreference('day', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-day', dataDay, 'pie'); updateChartPreference('day', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-day', dataDay, 'horizontal'); updateChartPreference('day', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataDay, 'table'); updateChartPreference('day', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-day" class="chart-container"></div>
             </div>
@@ -413,6 +418,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-week', dataWeek, 'line'); updateChartPreference('week', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-week', dataWeek, 'pie'); updateChartPreference('week', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-week', dataWeek, 'horizontal'); updateChartPreference('week', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataWeek, 'table'); updateChartPreference('week', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-week" class="chart-container"></div>
             </div>
@@ -423,6 +430,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-month', dataMonth, 'line'); updateChartPreference('month', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-month', dataMonth, 'pie'); updateChartPreference('month', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-month', dataMonth, 'horizontal'); updateChartPreference('month', 'horizontal');">Horizontal</button>
+                    <button onclick="redrawChart('chart-day', dataMonth, 'table'); updateChartPreference('month', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-month" class="chart-container"></div>
             </div>
@@ -433,6 +442,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-hour', dataHour, 'line'); updateChartPreference('hour', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-hour', dataHour, 'pie'); updateChartPreference('hour', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-hour', dataHour, 'horizontal'); updateChartPreference('hour', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataHour, 'table'); updateChartPreference('hour', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-hour" class="chart-container"></div>
             </div>
@@ -456,6 +467,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line'); updateChartPreference('resolutions', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie'); updateChartPreference('resolutions', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-resolutions', dataResolutions, 'horizontal'); updateChartPreference('resolutions', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataResolutions, 'table'); updateChartPreference('resolutions', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-resolutions" class="chart-container"></div>
             </div>
@@ -473,6 +486,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-os', dataOS, 'line'); updateChartPreference('os', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-os', dataOS, 'pie'); updateChartPreference('os', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-os', dataOS, 'horizontal'); updateChartPreference('os', 'horizontal');">Horizontal</button>
+               	    <button onclick="redrawChart('chart-day', dataOS, 'table'); updateChartPreference('os', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-os" class="chart-container"></div>
             </div>
@@ -490,6 +505,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line'); updateChartPreference('browsers', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie'); updateChartPreference('browsers', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-browsers', dataBrowsers, 'horizontal'); updateChartPreference('browsers', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataBrowsers, 'table'); updateChartPreference('browsers', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-browsers" class="chart-container"></div>
             </div>
@@ -507,6 +524,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-languages', dataLanguages, 'line'); updateChartPreference('languages', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-languages', dataLanguages, 'pie'); updateChartPreference('languages', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-languages', dataLanguages, 'horizontal'); updateChartPreference('languages', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataLanguages, 'table'); updateChartPreference('languages', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-languages" class="chart-container"></div>
             </div>
@@ -524,6 +543,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-timezones', dataTimezones, 'line'); updateChartPreference('timezones', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-timezones', dataTimezones, 'pie'); updateChartPreference('timezones', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-timezones', dataTimezones, 'horizontal'); updateChartPreference('timezones', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataTimezones, 'table'); updateChartPreference('timezones', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-timezones" class="chart-container"></div>
             </div>
@@ -541,6 +562,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'line'); updateChartPreference('color_depth', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'pie'); updateChartPreference('color_depth', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'horizontal'); updateChartPreference('color_depth', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataColorDepth, 'table'); updateChartPreference('color_depth', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-color-depth" class="chart-container"></div>
             </div>
@@ -558,6 +581,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-urls', dataUrls, 'line'); updateChartPreference('urls', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-urls', dataUrls, 'pie'); updateChartPreference('urls', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-urls', dataUrls, 'horizontal'); updateChartPreference('urls', 'horizontal');">Horizontal</button>
+               	    <button onclick="redrawChart('chart-day', dataUrls, 'table'); updateChartPreference('urls', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-urls" class="chart-container"></div>
             </div>
@@ -575,6 +600,8 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-ips', dataIps, 'line'); updateChartPreference('ips', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-ips', dataIps, 'pie'); updateChartPreference('ips', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-ips', dataIps, 'horizontal'); updateChartPreference('ips', 'horizontal');">Horizontal</button>
+                	    <button onclick="redrawChart('chart-day', dataIps, 'table'); updateChartPreference('ips', 'table');">Tabla</button>
+
                 </div>
                 <div id="chart-ips" class="chart-container"></div>
             </div>
@@ -634,7 +661,229 @@ if (isset($_SESSION['username'])) {
                 </tr>
               <?php endwhile; ?>
             </table>
-        <?php endif; ?>
+        
+        <?php elseif ($section === "calendar"): ?>
+			 <div class="chart-section calendar-container">
+				  <h3>Calendario Mensual de Visitas</h3>
+				  <?php
+				  // Query the first and last visit dates based on the current accounts clause.
+				  $q = "SELECT MIN(date(timestamp)) as first_date, MAX(date(timestamp)) as last_date FROM logs WHERE 1 $accountsClause";
+				  $stmtMinMax = $db->query($q);
+				  $minmax = $stmtMinMax->fetchArray(SQLITE3_ASSOC);
+				  $first_date = $minmax['first_date'];
+				  $last_date = $minmax['last_date'];
+
+				  // Build an associative array with visits per day.
+				  $visitsPerDay = [];
+				  $q2 = "SELECT date(timestamp) as day, COUNT(*) as visits FROM logs WHERE 1 $accountsClause GROUP BY day";
+				  $result2 = $db->query($q2);
+				  while ($row = $result2->fetchArray(SQLITE3_ASSOC)) {
+				      $visitsPerDay[$row['day']] = $row['visits'];
+				  }
+
+				  if (!$first_date || !$last_date) {
+				      echo "<p>No hay registros de visitas.</p>";
+				  } else {
+				      // Initialize DateTime objects.
+				      $start = new DateTime($first_date);
+				      // Start at the first day of the month for the earliest access.
+				      $start->modify('first day of this month');
+				      $end = new DateTime($last_date);
+				      // End after the last month (to include the complete final month).
+				      $end->modify('first day of next month');
+
+				      // Loop month by month.
+				      $current = clone $start;
+				      while ($current < $end) {
+				          $year = $current->format('Y');
+				          $monthName = $current->format('F');
+				          $daysInMonth = $current->format('t');
+				          // Determine the day of week the first day falls on (1=Monday, 7=Sunday).
+				          $firstDayOfWeek = (int)$current->format('N');
+
+				          echo "<h4>$monthName $year</h4>";
+				          echo "<table border='1' cellpadding='5' cellspacing='0'  class='calendar-table'>";
+				          // Table header with abbreviated day names.
+				          echo "<tr>";
+				          $daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+				          foreach ($daysOfWeek as $dayName) {
+				              echo "<th>$dayName</th>";
+				          }
+				          echo "</tr><tr>";
+
+				          // Fill in empty cells until the first day of the month.
+				          for ($i = 1; $i < $firstDayOfWeek; $i++) {
+				              echo "<td>&nbsp;</td>";
+				          }
+
+				          // Print each day of the month.
+				          for ($day = 1; $day <= $daysInMonth; $day++) {
+				              // Build a date string in Y-m-d format.
+				              $currentDateStr = $current->format('Y-m-') . str_pad($day, 2, '0', STR_PAD_LEFT);
+				              echo "<td>";
+				              echo "<strong>$day</strong><br>";
+				              if (isset($visitsPerDay[$currentDateStr])) {
+				                  echo $visitsPerDay[$currentDateStr] . " visitas";
+				              }
+				              echo "</td>";
+
+				              // Determine current cell index (starting from 1).
+				              $cellIndex = $firstDayOfWeek + $day - 1;
+				              // If the cell is the last in a week, end the row.
+				              if ($cellIndex % 7 == 0 && $day != $daysInMonth) {
+				                  echo "</tr><tr>";
+				              }
+				          }
+
+				          // Fill remaining cells in the last row if needed.
+				          $lastCellIndex = $firstDayOfWeek + $daysInMonth - 1;
+				          $remaining = 7 - ($lastCellIndex % 7);
+				          if ($remaining < 7) {
+				              for ($i = 0; $i < $remaining; $i++) {
+				                  echo "<td>&nbsp;</td>";
+				              }
+				          }
+				          echo "</tr>";
+				          echo "</table><br>";
+
+				          // Move to the next month.
+				          $current->modify('first day of next month');
+				      }
+				  }
+				  ?>
+			 </div>
+			 <?php elseif ($section === "heatmap"): ?>
+<div class="chart-section">
+    <h3>Calendario de Diagrama de Semanas (Heatmap)</h3>
+    <?php
+    // Query daily visit counts applying the current accounts restrictions.
+    $visitsPerDay = [];
+    $qHeat = "SELECT date(timestamp) as day, COUNT(*) as visits FROM logs WHERE 1 $accountsClause GROUP BY day";
+    $resHeat = $db->query($qHeat);
+    while ($row = $resHeat->fetchArray(SQLITE3_ASSOC)) {
+        $visitsPerDay[$row['day']] = $row['visits'];
+    }
+    
+    // For this heatmap, we show data for the current year.
+    $year = date('Y');
+    $startDate = new DateTime("$year-01-01");
+    $endDate = new DateTime("$year-12-31");
+    
+    // Build a grid based on ISO weeks.
+    // Iterate day by day to build an array keyed by week number and day-of-week (1 = Monday, 7 = Sunday).
+    $heatmap = [];
+    $currentDate = clone $startDate;
+    while ($currentDate <= $endDate) {
+        $week = $currentDate->format("W"); // ISO week number
+        $dayOfWeek = $currentDate->format("N"); // 1 (Monday) to 7 (Sunday)
+        $dateStr = $currentDate->format("Y-m-d");
+        $visits = isset($visitsPerDay[$dateStr]) ? $visitsPerDay[$dateStr] : 0;
+        $heatmap[$week][$dayOfWeek] = ['date' => $dateStr, 'visits' => $visits];
+        $currentDate->modify('+1 day');
+    }
+    
+    // Determine the maximum number of visits in a day (for color scaling).
+    $maxVisits = 0;
+    foreach ($visitsPerDay as $count) {
+        if ($count > $maxVisits) {
+            $maxVisits = $count;
+        }
+    }
+    
+    // Helper function: Returns a background color based on the visit count.
+    function getHeatmapColor($visits, $maxVisits) {
+        if ($visits == 0) {
+            return "#ebedf0";
+        }
+        $ratio = $visits / ($maxVisits ? $maxVisits : 1);
+        if ($ratio < 0.25) {
+            return "#c6e48b";
+        } elseif ($ratio < 0.5) {
+            return "#7bc96f";
+        } elseif ($ratio < 0.75) {
+            return "#239a3b";
+        } else {
+            return "#196127";
+        }
+    }
+    
+    // Get sorted week numbers.
+    $weeks = array_keys($heatmap);
+    sort($weeks);
+    
+    // Build an array of month names for each week.
+    $monthHeaders = [];
+    foreach ($weeks as $wk) {
+        $dt = new DateTime();
+        $dt->setISODate($year, intval($wk));
+        $monthHeaders[] = $dt->format("M");
+    }
+    
+    // Group consecutive weeks that have the same month.
+    $groups = [];
+    $prev = null;
+    $count = 0;
+    foreach ($monthHeaders as $i => $month) {
+        if ($month === $prev) {
+            $count++;
+        } else {
+            if ($prev !== null) {
+                $groups[] = ['month' => $prev, 'colspan' => $count];
+            }
+            $prev = $month;
+            $count = 1;
+        }
+    }
+    if ($prev !== null) {
+        $groups[] = ['month' => $prev, 'colspan' => $count];
+    }
+    ?>
+    <!-- Display the Year -->
+    <div class="heatmap-year">
+        <strong>Año <?php echo $year; ?></strong>
+    </div>
+    <div class="heatmap-container">
+        <table class="heatmap-table">
+            <!-- Month Header Row -->
+            <tr>
+                <th></th>
+                <?php
+                foreach ($groups as $group) {
+                    echo "<th colspan='" . $group['colspan'] . "'>" . $group['month'] . "</th>";
+                }
+                ?>
+            </tr>
+            <!-- Week Numbers Header Row -->
+            <tr>
+                <th></th>
+                <?php foreach ($weeks as $wk) { echo "<th>$wk</th>"; } ?>
+            </tr>
+            <?php
+            // Days of week: 1 = Monday, …, 7 = Sunday.
+            $dayNames = [1 => "Lun", 2 => "Mar", 3 => "Mié", 4 => "Jue", 5 => "Vie", 6 => "Sáb", 7 => "Dom"];
+            for ($day = 1; $day <= 7; $day++) {
+                echo "<tr>";
+                // Row header: abbreviated day name.
+                echo "<th>" . $dayNames[$day] . "</th>";
+                foreach ($weeks as $wk) {
+                    if (isset($heatmap[$wk][$day])) {
+                        $cell = $heatmap[$wk][$day];
+                        $color = getHeatmapColor($cell['visits'], $maxVisits);
+                        $tooltip = $cell['date'] . ": " . $cell['visits'] . " visitas";
+                        echo "<td style='background-color: $color;' title='$tooltip'></td>";
+                    } else {
+                        echo "<td></td>";
+                    }
+                }
+                echo "</tr>";
+            }
+            ?>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
+
+
     </div>
 </section>
 
