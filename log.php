@@ -15,7 +15,7 @@ header('Content-Type: application/json');
 
 try {
     // Connect to (or create) the SQLite database
-    $db = new SQLite3('analytics.db');
+    $db = new SQLite3('../databases/ghostwhite.db');
 
     // Create the table if it doesn't exist with the new columns
     $db->exec("CREATE TABLE IF NOT EXISTS logs (

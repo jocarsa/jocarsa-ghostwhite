@@ -2,7 +2,7 @@
 session_start();
 
 // Connect to (or create) the SQLite database.
-$db = new SQLite3('analytics.db');
+$db = new SQLite3('../databases/ghostwhite.db');
 
 // Create the users table if it doesn't exist.
 $db->exec("CREATE TABLE IF NOT EXISTS users (
