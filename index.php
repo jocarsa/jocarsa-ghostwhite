@@ -25,7 +25,6 @@ if ($row['count'] == 0) {
 }
 
 // Create a table to store the chart type preference for each chart.
-// Note: chart_id is marked UNIQUE so that we can use INSERT OR REPLACE.
 $db->exec("CREATE TABLE IF NOT EXISTS chart_preferences (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chart_id TEXT UNIQUE,
@@ -73,8 +72,27 @@ if (isset($_SESSION['username'])) {
     $endDate   = isset($_GET['end_date'])   ? $_GET['end_date']   : date('Y-m-d');
     $section   = isset($_GET['section'])    ? $_GET['section']    : 'overview';
 
-    // Get distinct users from logs for sidebar.
-    $userQuery = "SELECT DISTINCT user FROM logs WHERE user <> '' ORDER BY user";
+    // Fetch the assigned accounts for the logged in user from the user_accounts table.
+    $currentUser = $_SESSION['username'];
+    $assignedAccounts = [];
+    $stmtAssign = $db->prepare("SELECT account FROM user_accounts WHERE user = :user");
+    $stmtAssign->bindValue(':user', $currentUser, SQLITE3_TEXT);
+    $resAssign = $stmtAssign->execute();
+    while ($rowAssign = $resAssign->fetchArray(SQLITE3_ASSOC)) {
+        $assignedAccounts[] = $rowAssign['account'];
+    }
+    // Build a clause to restrict logs to only those accounts.
+    if (!empty($assignedAccounts)) {
+        // Create a comma-separated, single-quoted list
+        $inList = "'" . implode("','", $assignedAccounts) . "'";
+        $accountsClause = " AND user IN ($inList)";
+    } else {
+        // If no account is assigned, force the query to return no rows.
+        $accountsClause = " AND 0";
+    }
+
+    // Get distinct users from logs for sidebar (only within assigned accounts).
+    $userQuery = "SELECT DISTINCT user FROM logs WHERE user <> '' " . $accountsClause . " ORDER BY user";
     $userResult = $db->query($userQuery);
     $users = [];
     while ($u = $userResult->fetchArray(SQLITE3_ASSOC)) {
@@ -99,7 +117,7 @@ if (isset($_SESSION['username'])) {
         // Visits per day.
         $q = "SELECT date(timestamp) as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
         $stmtDay = $db->prepare($q);
@@ -113,7 +131,7 @@ if (isset($_SESSION['username'])) {
         // Visits per week.
         $q = "SELECT strftime('%Y-%W', timestamp) as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
         $stmtWeek = $db->prepare($q);
@@ -127,7 +145,7 @@ if (isset($_SESSION['username'])) {
         // Visits per month.
         $q = "SELECT strftime('%Y-%m', timestamp) as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
         $stmtMonth = $db->prepare($q);
@@ -141,7 +159,7 @@ if (isset($_SESSION['username'])) {
         // Visits per hour (last 24 hours).
         $q = "SELECT strftime('%H', timestamp) as label, count(*) as visits
               FROM logs
-              WHERE timestamp >= datetime('now', '-24 hours')";
+              WHERE timestamp >= datetime('now', '-24 hours')" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY label";
         $stmtHour = $db->prepare($q);
@@ -153,7 +171,7 @@ if (isset($_SESSION['username'])) {
     } elseif ($section === "resolutions") {
         $q = "SELECT (screen_width || 'x' || screen_height) as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtRes = $db->prepare($q);
@@ -167,7 +185,7 @@ if (isset($_SESSION['username'])) {
     } elseif ($section === "os") {
         $q = "SELECT platform as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtOS = $db->prepare($q);
@@ -188,7 +206,7 @@ if (isset($_SESSION['username'])) {
                   ELSE 'Other'
                 END as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtBrowsers = $db->prepare($q);
@@ -202,7 +220,7 @@ if (isset($_SESSION['username'])) {
     } elseif ($section === "languages") {
         $q = "SELECT language as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtLang = $db->prepare($q);
@@ -216,7 +234,7 @@ if (isset($_SESSION['username'])) {
     } elseif ($section === "timezones") {
         $q = "SELECT timezone_offset as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtTimezones = $db->prepare($q);
@@ -230,7 +248,7 @@ if (isset($_SESSION['username'])) {
     } elseif ($section === "color_depth") {
         $q = "SELECT screen_color_depth as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtColorDepth = $db->prepare($q);
@@ -244,7 +262,7 @@ if (isset($_SESSION['username'])) {
     } elseif ($section === "urls") {
         $q = "SELECT url as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtUrls = $db->prepare($q);
@@ -258,7 +276,7 @@ if (isset($_SESSION['username'])) {
     } elseif ($section === "ips") {
         $q = "SELECT ip as label, count(*) as visits
               FROM logs
-              WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
         $q .= " GROUP BY label ORDER BY visits DESC";
         $stmtIps = $db->prepare($q);
@@ -282,7 +300,7 @@ if (isset($_SESSION['username'])) {
 </head>
 <body>
 <?php if (!isset($_SESSION['username'])): ?>
-  <!-- FORMULARIO DE INICIO DE SESIÓN -->
+  <!-- LOGIN FORM -->
   <div class="login-container">
     <img src="ghostwhite.png" alt="Logo">
     <h2>jocarsa | ghostwhite</h2>
@@ -305,13 +323,13 @@ if (isset($_SESSION['username'])) {
   </div>
 <?php else: ?>
   <div id="wrapper">
-    <!-- ENCABEZADO -->
+    <!-- HEADER -->
     <header>
       <img src="ghostwhite.png" alt="Logo">
       <h1>jocarsa | ghostwhite</h1>
     </header>
     <div id="main-container">
-      <!-- BARRA LATERAL -->
+      <!-- SIDEBAR -->
       <nav id="sidebar">
         <h3>Usuarios</h3>
         <ul>
@@ -330,9 +348,9 @@ if (isset($_SESSION['username'])) {
           <a href="index.php?action=logout">Cerrar sesión (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
         </div>
       </nav>
-      <!-- CONTENIDO PRINCIPAL -->
+      <!-- MAIN CONTENT -->
       <main id="content">
-        <!-- SUB-Pestañas -->
+        <!-- SUB-TABS -->
         <div id="sub-tabs">
           <a href="index.php?section=overview&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="overview") echo 'class="active"'; ?>>Resumen</a>
           <a href="index.php?section=resolutions&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="resolutions") echo 'class="active"'; ?>>Resoluciones</a>
@@ -345,7 +363,7 @@ if (isset($_SESSION['username'])) {
           <a href="index.php?section=ips&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="ips") echo 'class="active"'; ?>>IPs</a>
           <a href="index.php?section=raw&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Datos Sin Procesar</a>
         </div>
-        <!-- FILTRO DE FECHA -->
+        <!-- DATE FILTER -->
         <section class="filters">
           <h3>Filtro de Fecha</h3>
           <form method="get" action="index.php">
@@ -362,10 +380,10 @@ if (isset($_SESSION['username'])) {
             <button type="submit">Aplicar</button>
           </form>
         </section>
-        <!-- Variables y funciones JavaScript globales -->
+        <!-- Global JavaScript variables and functions -->
         <script>
-          // chartPreferences contiene cualquier preferencia guardada por gráfico.
-          // Si la preferencia de un gráfico no está establecida, se usa 'bar' por defecto.
+          // chartPreferences holds any saved preference per chart.
+          // If a preference is not set, 'bar' is used by default.
           var chartPreferences = <?php echo json_encode($chartPrefs); ?>;
           function updateChartPreference(chartId, type) {
             var xhr = new XMLHttpRequest();
@@ -374,7 +392,7 @@ if (isset($_SESSION['username'])) {
             xhr.send("chart_id=" + encodeURIComponent(chartId) + "&chart_type=" + encodeURIComponent(type));
           }
         </script>
-        <!-- CONTENIDO DE ESTADÍSTICAS -->
+        <!-- STATISTICS CONTENT -->
         <section class="stats">
     <div class="chart-grid">
         <?php if ($section === "overview"): ?>
@@ -569,7 +587,7 @@ if (isset($_SESSION['username'])) {
         <?php elseif ($section === "raw"): ?>
             <h3>Datos Sin Procesar de Analítica</h3>
             <?php
-              $q = "SELECT * FROM logs WHERE date(timestamp) BETWEEN :startDate AND :endDate";
+              $q = "SELECT * FROM logs WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
               if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
               $q .= " ORDER BY id DESC";
               $stmtRaw = $db->prepare($q);
@@ -623,7 +641,7 @@ if (isset($_SESSION['username'])) {
       </main>
     </div>
   </div>
-  <!-- Incluir la librería de gráficos -->
+  <!-- Include the chart library -->
   <script src="charts.js"></script>
 <?php endif; ?>
 </body>
