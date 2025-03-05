@@ -348,25 +348,29 @@ if (isset($_SESSION['username'])) {
           <a href="index.php?action=logout">Cerrar sesión (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
         </div>
       </nav>
+      <!-- SUB NAVIGATION -->
+      <nav id="sub-nav">
+        <h3>Secciones</h3>
+        <ul>
+          <li><a href="index.php?section=overview&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="overview") echo 'class="active"'; ?>>Resumen</a></li>
+          <li><a href="index.php?section=resolutions&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="resolutions") echo 'class="active"'; ?>>Resoluciones</a></li>
+          <li><a href="index.php?section=os&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="os") echo 'class="active"'; ?>>Sistemas Operativos</a></li>
+          <li><a href="index.php?section=browsers&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="browsers") echo 'class="active"'; ?>>Navegadores</a></li>
+          <li><a href="index.php?section=languages&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="languages") echo 'class="active"'; ?>>Idiomas</a></li>
+          <li><a href="index.php?section=timezones&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="timezones") echo 'class="active"'; ?>>Zonas Horarias</a></li>
+          <li><a href="index.php?section=color_depth&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="color_depth") echo 'class="active"'; ?>>Profundidad de Color</a></li>
+          <li><a href="index.php?section=urls&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="urls") echo 'class="active"'; ?>>URLs Visitadas</a></li>
+          <li><a href="index.php?section=ips&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="ips") echo 'class="active"'; ?>>IPs</a></li>
+          <li><a href="index.php?section=raw&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Datos Sin Procesar</a></li>
+          <li><a href="index.php?section=calendar&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="calendar") echo 'class="active"'; ?>>Calendario</a></li>
+          <li><a href="index.php?section=heatmap&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="heatmap") echo 'class="active"'; ?>>Heatmap</a></li>
+          <li><a href="index.php?section=robots&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="robots") echo 'class="active"'; ?>>Robots vs Humanos</a></li>
+        </ul>
+      </nav>
       <!-- MAIN CONTENT -->
       <main id="content">
         <!-- SUB-TABS -->
-        <div id="sub-tabs">
-          <a href="index.php?section=overview&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="overview") echo 'class="active"'; ?>>Resumen</a>
-          <a href="index.php?section=resolutions&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="resolutions") echo 'class="active"'; ?>>Resoluciones</a>
-          <a href="index.php?section=os&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="os") echo 'class="active"'; ?>>Sistemas Operativos</a>
-          <a href="index.php?section=browsers&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="browsers") echo 'class="active"'; ?>>Navegadores</a>
-          <a href="index.php?section=languages&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="languages") echo 'class="active"'; ?>>Idiomas</a>
-          <a href="index.php?section=timezones&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="timezones") echo 'class="active"'; ?>>Zonas Horarias</a>
-          <a href="index.php?section=color_depth&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="color_depth") echo 'class="active"'; ?>>Profundidad de Color</a>
-          <a href="index.php?section=urls&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="urls") echo 'class="active"'; ?>>URLs Visitadas</a>
-          <a href="index.php?section=ips&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="ips") echo 'class="active"'; ?>>IPs</a>
-          <a href="index.php?section=raw&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Datos Sin Procesar</a>
-        	<a href="index.php?section=calendar&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="calendar") echo 'class="active"'; ?>>Calendario</a>
-			<a href="index.php?section=heatmap&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="heatmap") echo 'class="active"'; ?>>Heatmap</a>
-			<a href="index.php?section=robots&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="robots") echo 'class="active"'; ?>>Robots vs Humanos</a>
-
-        </div>
+       
         <!-- DATE FILTER -->
         <section class="filters">
           <h3>Filtro de Fecha</h3>
@@ -419,7 +423,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-week', dataWeek, 'line'); updateChartPreference('week', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-week', dataWeek, 'pie'); updateChartPreference('week', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-week', dataWeek, 'horizontal'); updateChartPreference('week', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataWeek, 'table'); updateChartPreference('week', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-week', dataWeek, 'table'); updateChartPreference('week', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-week" class="chart-container"></div>
@@ -431,7 +435,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-month', dataMonth, 'line'); updateChartPreference('month', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-month', dataMonth, 'pie'); updateChartPreference('month', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-month', dataMonth, 'horizontal'); updateChartPreference('month', 'horizontal');">Horizontal</button>
-                    <button onclick="redrawChart('chart-day', dataMonth, 'table'); updateChartPreference('month', 'table');">Tabla</button>
+                    <button onclick="redrawChart('chart-month', dataMonth, 'table'); updateChartPreference('month', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-month" class="chart-container"></div>
@@ -443,7 +447,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-hour', dataHour, 'line'); updateChartPreference('hour', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-hour', dataHour, 'pie'); updateChartPreference('hour', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-hour', dataHour, 'horizontal'); updateChartPreference('hour', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataHour, 'table'); updateChartPreference('hour', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-hour', dataHour, 'table'); updateChartPreference('hour', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-hour" class="chart-container"></div>
@@ -468,7 +472,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-resolutions', dataResolutions, 'line'); updateChartPreference('resolutions', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-resolutions', dataResolutions, 'pie'); updateChartPreference('resolutions', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-resolutions', dataResolutions, 'horizontal'); updateChartPreference('resolutions', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataResolutions, 'table'); updateChartPreference('resolutions', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-resolutions', dataResolutions, 'table'); updateChartPreference('resolutions', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-resolutions" class="chart-container"></div>
@@ -487,7 +491,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-os', dataOS, 'line'); updateChartPreference('os', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-os', dataOS, 'pie'); updateChartPreference('os', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-os', dataOS, 'horizontal'); updateChartPreference('os', 'horizontal');">Horizontal</button>
-               	    <button onclick="redrawChart('chart-day', dataOS, 'table'); updateChartPreference('os', 'table');">Tabla</button>
+               	    <button onclick="redrawChart('chart-os', dataOS, 'table'); updateChartPreference('os', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-os" class="chart-container"></div>
@@ -506,7 +510,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-browsers', dataBrowsers, 'line'); updateChartPreference('browsers', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-browsers', dataBrowsers, 'pie'); updateChartPreference('browsers', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-browsers', dataBrowsers, 'horizontal'); updateChartPreference('browsers', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataBrowsers, 'table'); updateChartPreference('browsers', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-browsers', dataBrowsers, 'table'); updateChartPreference('browsers', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-browsers" class="chart-container"></div>
@@ -525,7 +529,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-languages', dataLanguages, 'line'); updateChartPreference('languages', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-languages', dataLanguages, 'pie'); updateChartPreference('languages', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-languages', dataLanguages, 'horizontal'); updateChartPreference('languages', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataLanguages, 'table'); updateChartPreference('languages', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-languages', dataLanguages, 'table'); updateChartPreference('languages', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-languages" class="chart-container"></div>
@@ -544,7 +548,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-timezones', dataTimezones, 'line'); updateChartPreference('timezones', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-timezones', dataTimezones, 'pie'); updateChartPreference('timezones', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-timezones', dataTimezones, 'horizontal'); updateChartPreference('timezones', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataTimezones, 'table'); updateChartPreference('timezones', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-timezones', dataTimezones, 'table'); updateChartPreference('timezones', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-timezones" class="chart-container"></div>
@@ -563,7 +567,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'line'); updateChartPreference('color_depth', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'pie'); updateChartPreference('color_depth', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'horizontal'); updateChartPreference('color_depth', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataColorDepth, 'table'); updateChartPreference('color_depth', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-color-depth', dataColorDepth, 'table'); updateChartPreference('color_depth', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-color-depth" class="chart-container"></div>
@@ -582,7 +586,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-urls', dataUrls, 'line'); updateChartPreference('urls', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-urls', dataUrls, 'pie'); updateChartPreference('urls', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-urls', dataUrls, 'horizontal'); updateChartPreference('urls', 'horizontal');">Horizontal</button>
-               	    <button onclick="redrawChart('chart-day', dataUrls, 'table'); updateChartPreference('urls', 'table');">Tabla</button>
+               	    <button onclick="redrawChart('chart-urls', dataUrls, 'table'); updateChartPreference('urls', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-urls" class="chart-container"></div>
@@ -601,7 +605,7 @@ if (isset($_SESSION['username'])) {
                     <button onclick="redrawChart('chart-ips', dataIps, 'line'); updateChartPreference('ips', 'line');">Línea</button>
                     <button onclick="redrawChart('chart-ips', dataIps, 'pie'); updateChartPreference('ips', 'pie');">Pastel</button>
                     <button onclick="redrawChart('chart-ips', dataIps, 'horizontal'); updateChartPreference('ips', 'horizontal');">Horizontal</button>
-                	    <button onclick="redrawChart('chart-day', dataIps, 'table'); updateChartPreference('ips', 'table');">Tabla</button>
+                	    <button onclick="redrawChart('chart-ips', dataIps, 'table'); updateChartPreference('ips', 'table');">Tabla</button>
 
                 </div>
                 <div id="chart-ips" class="chart-container"></div>
