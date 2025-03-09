@@ -22,21 +22,27 @@ if (empty($assignedAccounts)) {
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
             $dataDashboard[] = $row;
         }
-        // Create a unique chart container ID by removing non-alphanumeric characters.
-        // This avoids hyphens in the ID.
+        // Create a unique chart container ID by replacing non-alphanumeric characters with an underscore.
         $chartId = "chart_dashboard_" . preg_replace("/[^a-zA-Z0-9_]/", "", $account);
 ?>
 <div class="chart-section">
     <h3>Visitas Por Día - <?php echo htmlspecialchars($account); ?></h3>
+    <!-- Chart type controls -->
+    <div class="chart-controls">
+      <button onclick="redrawChart('<?php echo $chartId; ?>', window.dashboardData['<?php echo $chartId; ?>'], 'bar'); updateChartPreference('dashboard_<?php echo $chartId; ?>', 'bar');">Barra</button>
+      <button onclick="redrawChart('<?php echo $chartId; ?>', window.dashboardData['<?php echo $chartId; ?>'], 'line'); updateChartPreference('dashboard_<?php echo $chartId; ?>', 'line');">Línea</button>
+      <button onclick="redrawChart('<?php echo $chartId; ?>', window.dashboardData['<?php echo $chartId; ?>'], 'pie'); updateChartPreference('dashboard_<?php echo $chartId; ?>', 'pie');">Pastel</button>
+      <button onclick="redrawChart('<?php echo $chartId; ?>', window.dashboardData['<?php echo $chartId; ?>'], 'horizontal'); updateChartPreference('dashboard_<?php echo $chartId; ?>', 'horizontal');">Horizontal</button>
+      <button onclick="redrawChart('<?php echo $chartId; ?>', window.dashboardData['<?php echo $chartId; ?>'], 'table'); updateChartPreference('dashboard_<?php echo $chartId; ?>', 'table');">Tabla</button>
+    </div>
     <div id="<?php echo $chartId; ?>" class="chart-container"></div>
     <script>
-      (function(){
-          // Directly use the JSON data without assigning it to a variable with a dash.
-          var data = <?php echo json_encode($dataDashboard); ?>;
-          document.addEventListener("DOMContentLoaded", function(){
-              redrawChart("<?php echo $chartId; ?>", data, chartPreferences['dashboard_<?php echo $chartId; ?>'] || 'bar');
-          });
-      })();
+      // Save the JSON data in a global object so it can be referenced by onclick handlers.
+      window.dashboardData = window.dashboardData || {};
+      window.dashboardData["<?php echo $chartId; ?>"] = <?php echo json_encode($dataDashboard); ?>;
+      document.addEventListener("DOMContentLoaded", function(){
+          redrawChart("<?php echo $chartId; ?>", window.dashboardData["<?php echo $chartId; ?>"], chartPreferences['dashboard_<?php echo $chartId; ?>'] || 'bar');
+      });
     </script>
 </div>
 <?php

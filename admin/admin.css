@@ -372,4 +372,12 @@ th {
   background-color: #575757;
   border-radius: 4px;
 }
+/* ------------------------------------------------------
+    CHART GRID (Dashboard)
+------------------------------------------------------ */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
 
