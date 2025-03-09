@@ -22,20 +22,21 @@ if (empty($assignedAccounts)) {
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
             $dataDashboard[] = $row;
         }
-        // Create a unique chart container ID (remove any non-alphanumeric characters)
-        $chartId = "chart-dashboard-" . preg_replace("/[^a-zA-Z0-9_-]/", "", $account);
+        // Create a unique chart container ID by removing non-alphanumeric characters.
+        // This avoids hyphens in the ID.
+        $chartId = "chart_dashboard_" . preg_replace("/[^a-zA-Z0-9_]/", "", $account);
 ?>
 <div class="chart-section">
     <h3>Visitas Por Día - <?php echo htmlspecialchars($account); ?></h3>
     <div id="<?php echo $chartId; ?>" class="chart-container"></div>
     <script>
-      // Pass the PHP data to JavaScript.
-      var dataDashboard_<?php echo $chartId; ?> = <?php echo json_encode($dataDashboard); ?>;
-      // Render the chart once the DOM is loaded.
-      document.addEventListener("DOMContentLoaded", function(){
-          // Use a unique key (e.g., 'dashboard_<?php echo $chartId; ?>') for saving the chart preference.
-          redrawChart("<?php echo $chartId; ?>", dataDashboard_<?php echo $chartId; ?>, chartPreferences['dashboard_<?php echo $chartId; ?>'] || 'bar');
-      });
+      (function(){
+          // Directly use the JSON data without assigning it to a variable with a dash.
+          var data = <?php echo json_encode($dataDashboard); ?>;
+          document.addEventListener("DOMContentLoaded", function(){
+              redrawChart("<?php echo $chartId; ?>", data, chartPreferences['dashboard_<?php echo $chartId; ?>'] || 'bar');
+          });
+      })();
     </script>
 </div>
 <?php
