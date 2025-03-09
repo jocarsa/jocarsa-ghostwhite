@@ -8,12 +8,12 @@
     while ($row = $resHeat->fetchArray(SQLITE3_ASSOC)) {
         $visitsPerDay[$row['day']] = $row['visits'];
     }
-    
+
     // For this heatmap, we show data for the current year.
     $year = date('Y');
     $startDate = new DateTime("$year-01-01");
     $endDate = new DateTime("$year-12-31");
-    
+
     // Build a grid based on ISO weeks.
     // Iterate day by day to build an array keyed by week number and day-of-week (1 = Monday, 7 = Sunday).
     $heatmap = [];
@@ -26,7 +26,7 @@
         $heatmap[$week][$dayOfWeek] = ['date' => $dateStr, 'visits' => $visits];
         $currentDate->modify('+1 day');
     }
-    
+
     // Determine the maximum number of visits in a day (for color scaling).
     $maxVisits = 0;
     foreach ($visitsPerDay as $count) {
@@ -34,7 +34,7 @@
             $maxVisits = $count;
         }
     }
-    
+
     // Helper function: Returns a background color based on the visit count.
     function getHeatmapColor($visits, $maxVisits) {
         if ($visits == 0) {
@@ -51,11 +51,11 @@
             return "#196127";
         }
     }
-    
+
     // Get sorted week numbers.
     $weeks = array_keys($heatmap);
     sort($weeks);
-    
+
     // Build an array of month names for each week.
     $monthHeaders = [];
     foreach ($weeks as $wk) {
@@ -63,7 +63,7 @@
         $dt->setISODate($year, intval($wk));
         $monthHeaders[] = $dt->format("M");
     }
-    
+
     // Group consecutive weeks that have the same month.
     $groups = [];
     $prev = null;
@@ -126,3 +126,4 @@
         </table>
     </div>
 </div>
+

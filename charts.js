@@ -290,17 +290,6 @@ function drawPieChart(containerId, data, chartTitle) {
   });
 }
 
-// Redraw chart: accepts container id, data, chart type, and optional chart title.
-function redrawChart(containerId, data, chartType, chartTitle) {
-  chartTitle = chartTitle || "";
-  if (chartType === "bar") {
-    drawBarChart(containerId, data, chartTitle);
-  } else if (chartType === "line") {
-    drawLineChart(containerId, data, chartTitle);
-  } else if (chartType === "pie") {
-    drawPieChart(containerId, data, chartTitle);
-  }
-}
 // Draw a Horizontal Bar Chart with title, labels, values, and interactive hover.
 function drawHorizontalBarChart(containerId, data, chartTitle) {
   var container = clearContainer(containerId);
@@ -375,55 +364,57 @@ function drawHorizontalBarChart(containerId, data, chartTitle) {
     svg.appendChild(valueText);
   });
 }
+
+// Draw a Table Chart with title, labels, values, and interactive hover.
 function drawTableChart(containerId, data, chartTitle) {
   var container = clearContainer(containerId);
-  
+
   // Optionally add a title
   if (chartTitle) {
     var titleEl = document.createElement("h3");
     titleEl.textContent = chartTitle;
     container.appendChild(titleEl);
   }
-  
+
   // Create table
   var table = document.createElement("table");
   table.style.width = "100%";
   table.style.borderCollapse = "collapse";
-  
+
   // Create header row
   var thead = document.createElement("thead");
   var headerRow = document.createElement("tr");
-  
+
   var thLabel = document.createElement("th");
   thLabel.textContent = "Label";
   thLabel.style.border = "1px solid #ccc";
   thLabel.style.padding = "5px";
-  
+
   var thVisits = document.createElement("th");
   thVisits.textContent = "Visits";
   thVisits.style.border = "1px solid #ccc";
   thVisits.style.padding = "5px";
-  
+
   headerRow.appendChild(thLabel);
   headerRow.appendChild(thVisits);
   thead.appendChild(headerRow);
   table.appendChild(thead);
-  
+
   // Create table body
   var tbody = document.createElement("tbody");
   data.forEach(function(d) {
     var row = document.createElement("tr");
-    
+
     var tdLabel = document.createElement("td");
     tdLabel.textContent = d.label;
     tdLabel.style.border = "1px solid #ccc";
     tdLabel.style.padding = "5px";
-    
+
     var tdVisits = document.createElement("td");
     tdVisits.textContent = d.visits;
     tdVisits.style.border = "1px solid #ccc";
     tdVisits.style.padding = "5px";
-    
+
     row.appendChild(tdLabel);
     row.appendChild(tdVisits);
     tbody.appendChild(row);
@@ -431,7 +422,8 @@ function drawTableChart(containerId, data, chartTitle) {
   table.appendChild(tbody);
   container.appendChild(table);
 }
-// Update the redrawChart function to include the new chart type.
+
+// Redraw chart: accepts container id, data, chart type, and optional chart title.
 function redrawChart(containerId, data, chartType, chartTitle) {
   chartTitle = chartTitle || "";
   if (chartType === "bar") {

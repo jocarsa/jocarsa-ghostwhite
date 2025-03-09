@@ -37,12 +37,21 @@ if (empty($assignedAccounts)) {
     </div>
     <div id="<?php echo $chartId; ?>" class="chart-container"></div>
     <script>
-      // Save the JSON data in a global object so it can be referenced by onclick handlers.
-      window.dashboardData = window.dashboardData || {};
-      window.dashboardData["<?php echo $chartId; ?>"] = <?php echo json_encode($dataDashboard); ?>;
-      document.addEventListener("DOMContentLoaded", function(){
-          redrawChart("<?php echo $chartId; ?>", window.dashboardData["<?php echo $chartId; ?>"], chartPreferences['dashboard_<?php echo $chartId; ?>'] || 'bar');
-      });
+      (function(){
+          // Save the JSON data in a global object so it can be referenced later.
+          window.dashboardData = window.dashboardData || {};
+          window.dashboardData["<?php echo $chartId; ?>"] = <?php echo json_encode($dataDashboard); ?>;
+          // Function to render the chart.
+          var renderChart = function(){
+              redrawChart("<?php echo $chartId; ?>", window.dashboardData["<?php echo $chartId; ?>"], chartPreferences['dashboard_<?php echo $chartId; ?>'] || 'bar');
+          };
+          // If the document is still loading, wait for DOMContentLoaded.
+          if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", renderChart);
+          } else {
+              renderChart();
+          }
+      })();
     </script>
 </div>
 <?php

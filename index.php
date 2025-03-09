@@ -43,7 +43,7 @@ if (isset($_SESSION['username'])) {
         $users[] = $u['user'];
     }
 
-    // Prepare data arrays for statistics.
+    // Prepare data arrays for statistics (for sections other than dashboard).
     $dataDay = [];
     $dataWeek = [];
     $dataMonth = [];
@@ -57,7 +57,7 @@ if (isset($_SESSION['username'])) {
     $dataUrls = [];
     $dataIps = [];
 
-    // Note: The section inclusion below will include the dashboard file when $section === "dashboard"
+    // (Other section‑specific queries occur in the included files below.)
 }
 ?>
 <!DOCTYPE html>
@@ -67,6 +67,8 @@ if (isset($_SESSION['username'])) {
   <title>jocarsa | ghostwhite</title>
   <link rel="stylesheet" href="admin/admin.css">
   <link rel="icon" type="image/svg+xml" href="ghostwhite.png" />
+  <!-- Load charts.js in the head so its functions are available to all inline scripts -->
+  <script src="charts.js"></script>
 </head>
 <body>
 <?php if (!isset($_SESSION['username'])): ?>
@@ -99,16 +101,20 @@ if (isset($_SESSION['username'])) {
       <h1>jocarsa | ghostwhite</h1>
     </header>
     <div id="main-container">
-      <!-- SIDEBAR -->
+      <!-- SIDEBAR (Usuarios nav with Dashboard link) -->
       <nav id="sidebar">
         <h3>Usuarios</h3>
         <ul>
+          <!-- Add Dashboard link here -->
           <li>
-            <a href="index.php?start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>">Todos los usuarios</a>
+            <a href="index.php?section=dashboard&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="dashboard") echo 'class="active"'; ?>>Dashboard</a>
+          </li>
+          <li>
+            <a href="index.php?start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>">Todos los usuarios</a>
           </li>
           <?php foreach ($users as $usr): ?>
             <li>
-              <a href="index.php?filter_user=<?php echo urlencode($usr); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>">
+              <a href="index.php?filter_user=<?php echo urlencode($usr); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>">
                 <?php echo htmlspecialchars($usr); ?>
               </a>
             </li>
@@ -118,29 +124,25 @@ if (isset($_SESSION['username'])) {
           <a href="index.php?action=logout">Cerrar sesión (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a>
         </div>
       </nav>
-      <!-- SUB NAVIGATION -->
+      <!-- SUB NAVIGATION (Secciones except Dashboard) -->
       <nav id="sub-nav">
         <h3>Secciones</h3>
         <ul>
-          <!-- New Dashboard Link -->
           <li>
-            <a href="index.php?section=dashboard&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="dashboard") echo 'class="active"'; ?>>Dashboard</a>
+            <a href="index.php?section=overview&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="overview") echo 'class="active"'; ?>>Resumen</a>
           </li>
-          <li>
-            <a href="index.php?section=overview&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="overview") echo 'class="active"'; ?>>Resumen</a>
-          </li>
-          <li><a href="index.php?section=resolutions&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="resolutions") echo 'class="active"'; ?>>Resoluciones</a></li>
-          <li><a href="index.php?section=os&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="os") echo 'class="active"'; ?>>Sistemas Operativos</a></li>
-          <li><a href="index.php?section=browsers&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="browsers") echo 'class="active"'; ?>>Navegadores</a></li>
-          <li><a href="index.php?section=languages&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="languages") echo 'class="active"'; ?>>Idiomas</a></li>
-          <li><a href="index.php?section=timezones&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="timezones") echo 'class="active"'; ?>>Zonas Horarias</a></li>
-          <li><a href="index.php?section=color_depth&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="color_depth") echo 'class="active"'; ?>>Profundidad de Color</a></li>
-          <li><a href="index.php?section=urls&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="urls") echo 'class="active"'; ?>>URLs Visitadas</a></li>
-          <li><a href="index.php?section=ips&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="ips") echo 'class="active"'; ?>>IPs</a></li>
-          <li><a href="index.php?section=raw&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Datos Sin Procesar</a></li>
-          <li><a href="index.php?section=calendar&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="calendar") echo 'class="active"'; ?>>Calendario</a></li>
-          <li><a href="index.php?section=heatmap&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="heatmap") echo 'class="active"'; ?>>Heatmap</a></li>
-          <li><a href="index.php?section=robots&filter_user=<?php echo urlencode($filterUser); ?>&start_date=<?php echo urlencode($startDate); ?>&end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="robots") echo 'class="active"'; ?>>Robots vs Humanos</a></li>
+          <li><a href="index.php?section=resolutions&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="resolutions") echo 'class="active"'; ?>>Resoluciones</a></li>
+          <li><a href="index.php?section=os&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="os") echo 'class="active"'; ?>>Sistemas Operativos</a></li>
+          <li><a href="index.php?section=browsers&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="browsers") echo 'class="active"'; ?>>Navegadores</a></li>
+          <li><a href="index.php?section=languages&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="languages") echo 'class="active"'; ?>>Idiomas</a></li>
+          <li><a href="index.php?section=timezones&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="timezones") echo 'class="active"'; ?>>Zonas Horarias</a></li>
+          <li><a href="index.php?section=color_depth&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="color_depth") echo 'class="active"'; ?>>Profundidad de Color</a></li>
+          <li><a href="index.php?section=urls&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="urls") echo 'class="active"'; ?>>URLs Visitadas</a></li>
+          <li><a href="index.php?section=ips&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="ips") echo 'class="active"'; ?>>IPs</a></li>
+          <li><a href="index.php?section=raw&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="raw") echo 'class="active"'; ?>>Datos Sin Procesar</a></li>
+          <li><a href="index.php?section=calendar&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="calendar") echo 'class="active"'; ?>>Calendario</a></li>
+          <li><a href="index.php?section=heatmap&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="heatmap") echo 'class="active"'; ?>>Heatmap</a></li>
+          <li><a href="index.php?section=robots&amp;filter_user=<?php echo urlencode($filterUser); ?>&amp;start_date=<?php echo urlencode($startDate); ?>&amp;end_date=<?php echo urlencode($endDate); ?>" <?php if($section=="robots") echo 'class="active"'; ?>>Robots vs Humanos</a></li>
         </ul>
       </nav>
       <!-- MAIN CONTENT -->
@@ -177,34 +179,47 @@ if (isset($_SESSION['username'])) {
         <!-- STATISTICS CONTENT -->
         <section class="stats">
           <div class="chart-grid">
-            <?php 
+            <?php
               if ($section === "dashboard") {
                   include "inc/secciones/dashboard.php";
               } elseif ($section === "overview") {
+              		include "inc/secciones/vistazo.php";
                   include "partes/vistazo.php";
               } elseif ($section === "resolutions") {
+              		include "inc/secciones/resoluciones.php";
                   include "partes/resoluciones.php";
               } elseif ($section === "os") {
+              		include "inc/secciones/os.php";
                   include "partes/os.php";
               } elseif ($section === "browsers") {
+              		include "inc/secciones/navegadores.php";
                   include "partes/navegadores.php";
               } elseif ($section === "languages") {
+              		include "inc/secciones/idiomas.php";
                   include "partes/idiomas.php";
               } elseif ($section === "timezones") {
+              		include "inc/secciones/timezones.php";
                   include "partes/timezones.php";
               } elseif ($section === "color_depth") {
+              		include "inc/secciones/color.php";
                   include "partes/colores.php";
               } elseif ($section === "urls") {
+              		include "inc/secciones/urls.php";
                   include "partes/urls.php";
               } elseif ($section === "ips") {
+              		include "inc/secciones/ips.php";
                   include "partes/ips.php";
               } elseif ($section === "raw") {
+              		
                   include "partes/crudo.php";
               } elseif ($section === "calendar") {
+              		
                   include "partes/calendario.php";
               } elseif ($section === "heatmap") {
+              		
                   include "partes/mapadecalor.php";
               } elseif ($section === "robots") {
+              		
                   include "partes/robots.php";
               }
             ?>
@@ -213,8 +228,6 @@ if (isset($_SESSION['username'])) {
       </main>
     </div>
   </div>
-  <!-- Include the chart library -->
-  <script src="charts.js"></script>
 <?php endif; ?>
 </body>
 </html>

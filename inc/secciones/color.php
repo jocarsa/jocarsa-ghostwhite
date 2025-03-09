@@ -1,5 +1,5 @@
 <?php
-$q = "SELECT screen_color_depth as label, count(*) as visits
+	$q = "SELECT screen_color_depth as label, count(*) as visits
               FROM logs
               WHERE date(timestamp) BETWEEN :startDate AND :endDate" . $accountsClause;
         if ($filterUser !== '') { $q .= " AND user = :filter_user"; }
