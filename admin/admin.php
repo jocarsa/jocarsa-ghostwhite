@@ -61,7 +61,7 @@ exit;
 endif;
 
 // ----- Admin is Logged In; Set up Database Connection -----
-$db = new SQLite3('../databases/ghostwhite.db');
+$db = new SQLite3('../../databases/ghostwhite.db');
 
 // Create the new table to map registered users to log accounts.
 $db->exec("CREATE TABLE IF NOT EXISTS user_accounts (
